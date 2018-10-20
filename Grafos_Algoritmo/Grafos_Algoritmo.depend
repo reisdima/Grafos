@@ -1,0 +1,27 @@
+# depslib dependency file v1.0
+1539110452 source:c:\users\caio\documents\codeblocks\grafos\grafos_algoritmo\aresta.cpp
+	"Aresta.h"
+
+1539192942 c:\users\caio\documents\codeblocks\grafos\grafos_algoritmo\aresta.h
+	<iostream>
+	"Vertice.h"
+
+1539278556 source:c:\users\caio\documents\codeblocks\grafos\grafos_algoritmo\grafo.cpp
+	"Grafo.h"
+
+1539200346 c:\users\caio\documents\codeblocks\grafos\grafos_algoritmo\grafo.h
+	"Vertice.h"
+	"Aresta.h"
+
+1539192935 c:\users\caio\documents\codeblocks\grafos\grafos_algoritmo\vertice.h
+	<iostream>
+	"Aresta.h"
+
+1539200346 source:c:\users\caio\documents\codeblocks\grafos\grafos_algoritmo\main.cpp
+	<iostream>
+	<string>
+	"Grafo.h"
+
+1539108908 source:c:\users\caio\documents\codeblocks\grafos\grafos_algoritmo\vertice.cpp
+	"Vertice.h"
+
