@@ -46,6 +46,7 @@ void Grafo::adicionaVertice(string nome)
     if(!existeVertice(nome)){
         Vertice *novo = new Vertice();
         novo->setNome(nome);
+        novo->setArestaAdj(NULL);
         if(primeiro == NULL){
             primeiro = novo;
         }
@@ -72,23 +73,32 @@ void Grafo::adicionaAresta(string nome1, string nome2)
     Aresta *nova2 = new Aresta();
     nova1->setVerticeAdj(nome2);
     nova2->setVerticeAdj(nome1);
-    nova1->setEnderecoVerticeAdj(no1);
-    nova2->setEnderecoVerticeAdj(no2);
+
+
+    nova1->setEnderecoVerticeAdj(no2);
+    nova2->setEnderecoVerticeAdj(no1);
+
     Aresta *aux = no1->getArestaAdj();
-    if(aux == NULL)
+    if(aux == NULL){
         no1->setArestaAdj(nova1);
+        nova1->setProx(NULL);
+    }
     else{
         while(aux->getProx()!=NULL)
             aux = aux->getProx();
         aux->setProx(nova1);
+        nova1->setProx(NULL);
     }
     aux = no2->getArestaAdj();
-    if(aux == NULL)
+    if(aux == NULL){
         no2->setArestaAdj(nova2);
+        nova2->setProx(NULL);
+    }
     else{
         while(aux->getProx() != NULL)
             aux = aux->getProx();
         aux->setProx(nova2);
+        nova2->setProx(NULL);
     }
     no1->aumentaGrau();
     no2->aumentaGrau();
