@@ -9,12 +9,12 @@ class Vertice;
 class Aresta
 {
 public:
-    Aresta();
-    Aresta(float peso1);
+    Aresta(); //contrutor para aresta
+    Aresta(float peso1); //contrutor para aresta com peso
     ~Aresta();
 
-    void setPeso(float p);
-    void setProx(Aresta *p);
+    void setPeso(float p); //definir peso para aresta sem peso
+    void setProx(Aresta *p); //define para onde vai a aresta, ou seja o "nó final"
     void setVerticeAdj(string nome);
     void setEnderecoVerticeAdj(Vertice *adjacente);
 

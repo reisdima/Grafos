@@ -8,7 +8,7 @@ void Menu()
 {
     cout << "[1] Adicionar Vertice" << endl;
     cout << "[2] Adicionar Aresta" << endl;
-    cout << "[3] Lista de Adjacencia" << endl;
+    cout << "[3] Exibir Grafo por Lista de Adjacencia" << endl;
     cout << "[4] Remover Vertice" << endl;
     cout << "[5] Remover Aresta" << endl;
     cout << "[6] Grau de um Vertice" << endl;
@@ -71,7 +71,7 @@ int main()
                 cout << "O grafo nao e " << k << "-regular"<< endl;
         }
         else if(escolha==8){
-
+            cout<<endl<<"O grafo tem ordem: "<<G.getOrdemDoGrafo()<<endl;
         }
         else if(escolha==0)
             break;

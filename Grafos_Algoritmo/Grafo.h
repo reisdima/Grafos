@@ -18,12 +18,15 @@ public:
     void listaAdjacencia();
     int grauVertice(string nome);
     bool K_Regularidade(int k);
-    int ordemDoGrafo();
+    void aumentaOrdem();
+    void diminuiOrdem();
+    int getOrdemDoGrafo();
 
 private:
     Vertice *primeiro;
     bool existeVertice(string nome);
     Vertice *getVertice(string nome);
+    int ordemGrafo;
 };
 
 #endif // GRAFO_H

@@ -5,6 +5,7 @@
 Grafo::Grafo()
 {
     primeiro = NULL;
+    ordemGrafo = 0;
 
 }
 
@@ -55,6 +56,7 @@ void Grafo::adicionaVertice(string nome)
             aux->setProx(novo);
         }
     }
+    aumentaOrdem();
 }
 
 void Grafo::adicionaAresta(string nome1, string nome2)
@@ -186,6 +188,7 @@ void Grafo::removeVertice(string nome)
     else{
         //vertice não existe
     }
+    diminuiOrdem();
 }
 
 
@@ -224,4 +227,14 @@ bool Grafo::K_Regularidade(int k)
     }
     return true;
 
+}
+
+void Grafo::aumentaOrdem(){
+    ordemGrafo++;
+}
+void Grafo::diminuiOrdem(){
+    ordemGrafo--;
+}
+int Grafo::getOrdemDoGrafo(){
+    return ordemGrafo;
 }

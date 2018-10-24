@@ -1,6 +1,6 @@
 #include "Vertice.h"
 
-Vertice::Vertice()
+Vertice::Vertice() //contrutor, define a aresta adjascente como full e define seu grau como 0 por ser um novo vertice
 {
     arestaAdj = NULL;
     prox = NULL;
@@ -12,32 +12,32 @@ Vertice::~Vertice()
     //dtor
 }
 
-void Vertice::setNome(string nome1)
+void Vertice::setNome(string nome1)  //define um nome pro vertice que foi passado como referencia
 {
     this->nome = nome1;
 }
 
-void Vertice::setArestaAdj(Aresta *adj)
+void Vertice::setArestaAdj(Aresta *adj) //define uma aresta adjascente (passada por referecia) para o vertice selecionado
 {
     this->arestaAdj = adj;
 }
 
-void Vertice::setProx(Vertice *p)
+void Vertice::setProx(Vertice *p)   //define um proximo vertice para o vertice atual(no caso seria como uma aresta entre este dois vertices)
 {
     this->prox = p;
 }
 
-int Vertice::getGrau()
+int Vertice::getGrau()  //retorna o grau do vertice
 {
     return grau;
 }
 
-string Vertice::getNome()
+string Vertice::getNome() //retorna o grau do vertice
 {
     return this->nome;
 }
 
-Aresta *Vertice::getArestaAdj()
+Aresta *Vertice::getArestaAdj() //retorna a aresta adjascente
 {
     return this->arestaAdj;
 }
@@ -47,12 +47,12 @@ Vertice *Vertice::getProx()
     return prox;
 }
 
-void Vertice::aumentaGrau()
+void Vertice::aumentaGrau() //utilizado para aumentar o grau do vertice quando é adicionada uma nova aresta
 {
     grau++;
 }
 
-void Vertice::diminuiGrau()
+void Vertice::diminuiGrau() //utilizada para diminuir o grau do vertice quando uma aresta é removida
 {
     grau--;
 }
