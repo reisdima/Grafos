@@ -248,3 +248,47 @@ void Grafo::diminuiOrdem(){
 int Grafo::getOrdemDoGrafo(){
     return ordemGrafo;
 }
+
+
+void Grafo::vizinhancaAberta(string nome)
+{
+    if(existeVertice(nome)){
+        Vertice *auxVertice = getVertice(nome);
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        cout << "[ ";
+        while(auxAresta!=NULL){
+            cout << auxAresta->getVerticeAdj() << ", ";
+            auxAresta = auxAresta->getProx();
+        }
+        cout << "]" << endl;
+    }
+    else{
+        //erro vertice nao existe
+    }
+}
+
+void Grafo::vizinhancaFechada(string nome)
+{
+    if(existeVertice(nome)){
+        Vertice *auxVertice = getVertice(nome);
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        cout << "[ " << auxVertice->getNome() << ", ";
+        while(auxAresta!=NULL){
+            cout << auxAresta->getVerticeAdj() << ", ";
+            auxAresta = auxAresta->getProx();
+        }
+        cout << "]" << endl;
+    }
+    else{
+        //erro vertice nao existe
+    }
+}
+
+
+
+
+
+
+
+
+

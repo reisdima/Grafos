@@ -14,6 +14,8 @@ void Menu()
     cout << "[6] Grau de um Vertice" << endl;
     cout << "[7] Verifiar a K regularidade do grafo" << endl;
     cout << "[8] Ordem do Grafo" << endl;
+    cout << "[9] Vizinhanca aberta de um vertice" << endl;
+    cout << "[10] Vizinhanca fechada de um vertice" << endl;
     cout << "[0] Sair" << endl;
 }
 
@@ -72,6 +74,18 @@ int main()
         }
         else if(escolha==8){
             cout<<endl<<"O grafo tem ordem: "<<G.getOrdemDoGrafo()<<endl;
+        }
+        else if(escolha == 9){
+            string nome;
+            cout << "Digite o nome do vertice que voce deseja ver a vizinhanca aberta: ";
+            cin >> nome;
+            G.vizinhancaAberta(nome);
+        }
+        else if(escolha == 10){
+            string nome;
+            cout << "Digite o nome do vertice que voce deseja ver a vizinhanca fechada: ";
+            cin >> nome;
+            G.vizinhancaFechada(nome);
         }
         else if(escolha==0)
             break;
