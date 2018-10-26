@@ -6,16 +6,17 @@ using namespace std;
 
 void Menu()
 {
-    cout << "[1] Adicionar Vertice" << endl;
-    cout << "[2] Adicionar Aresta" << endl;
-    cout << "[3] Exibir Grafo por Lista de Adjacencia" << endl;
-    cout << "[4] Remover Vertice" << endl;
-    cout << "[5] Remover Aresta" << endl;
-    cout << "[6] Grau de um Vertice" << endl;
-    cout << "[7] Verifiar a K regularidade do grafo" << endl;
-    cout << "[8] Ordem do Grafo" << endl;
-    cout << "[9] Vizinhanca aberta de um vertice" << endl;
+    cout << "[1]  Adicionar Vertice" << endl;
+    cout << "[2]  Adicionar Aresta" << endl;
+    cout << "[3]  Exibir Grafo por Lista de Adjacencia" << endl;
+    cout << "[4]  Remover Vertice" << endl;
+    cout << "[5]  Remover Aresta" << endl;
+    cout << "[6]  Grau de um Vertice" << endl;
+    cout << "[7]  Verifiar a K regularidade do grafo" << endl;
+    cout << "[8]  Ordem do Grafo" << endl;
+    cout << "[9]  Vizinhanca aberta de um vertice" << endl;
     cout << "[10] Vizinhanca fechada de um vertice" << endl;
+    cout << "[11] Verificar se o grafo e completo" << endl;
     cout << "[0] Sair" << endl;
 }
 
@@ -86,6 +87,12 @@ int main()
             cout << "Digite o nome do vertice que voce deseja ver a vizinhanca fechada: ";
             cin >> nome;
             G.vizinhancaFechada(nome);
+        }
+        else if(escolha==11){
+            if(G.grafoCompleto())
+                cout << "O grafo e completo" << endl;
+            else
+                cout << "O grafo nao e completo" << endl;
         }
         else if(escolha==0)
             break;

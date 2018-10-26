@@ -1,5 +1,5 @@
 #include "Grafo.h"
-
+#include <list>
 
 
 Grafo::Grafo()
@@ -220,8 +220,14 @@ void Grafo::listaAdjacencia()
 
 int Grafo::grauVertice(string nome)
 {
-    Vertice *aux = getVertice(nome);
-    return aux->getGrau();
+    if(existeVertice(nome)){
+        Vertice *aux = getVertice(nome);
+        return aux->getGrau();
+    }
+    else{
+        //erro vertice nao existe
+        return -1;
+    }
 }
 
 
@@ -285,10 +291,32 @@ void Grafo::vizinhancaFechada(string nome)
 }
 
 
+bool Grafo::grafoCompleto()
+{
+    Vertice *aux = primeiro;
+    while(aux!=NULL){
+        if(aux->getGrau() != ordemGrafo-1)
+            return false;
+        aux = aux->getProx();
+    }
+    return true;
+}
+
+
+bool Grafo::grafoBipartido()
+{
+    if(!grafoVazio()){
+        list<string> *particao1 = new list<string>;
+        list<string> *particao2 = new list<string>;
+        Vertice *aux = primeiro;
+
+    }
+}
 
 
 
 
-
-
-
+bool Grafo::grafoVazio()
+{
+    return (primeiro==NULL);
+}

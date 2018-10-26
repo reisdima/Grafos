@@ -21,6 +21,8 @@ public:
     int getOrdemDoGrafo();
     void vizinhancaAberta(string nome);
     void vizinhancaFechada(string nome);
+    bool grafoCompleto();
+    bool grafoBipartido();
 
 private:
     Vertice *primeiro;
@@ -29,6 +31,7 @@ private:
     int ordemGrafo;
     void aumentaOrdem();
     void diminuiOrdem();
+    bool grafoVazio();
 };
 
 #endif // GRAFO_H
