@@ -416,10 +416,39 @@ int Grafo::getIndex(string *nomes, string nome)
 
 }
 
-
-
-
 bool Grafo::grafoVazio()
 {
     return (primeiro==NULL);
+}
+
+void Grafo::sequenciaGraus()
+{
+    if(!grafoVazio()){
+        Vertice *auxVertice = primeiro;
+        int *vet = new int[ordemGrafo];
+        int i=0;
+        while(auxVertice!=NULL){
+            vet[i] = auxVertice->getGrau();
+            auxVertice = auxVertice->getProx();
+            i++;
+        }
+        for(int i=0; i<ordemGrafo; i++){
+            for(int j=0; j<ordemGrafo; j++){
+                if(vet[i]>vet[j]){
+                    int aux = vet[i];
+                    vet[i] = vet[j];
+                    vet[j] = aux;
+                }
+            }
+        }
+
+        cout << "< ";
+        for(int i=0; i<ordemGrafo; i++){
+            cout << vet[i] << ", ";
+        }
+        cout << " >" << endl;
+    }
+    else{
+        //grafo vazio
+    }
 }

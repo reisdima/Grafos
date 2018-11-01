@@ -24,6 +24,7 @@ public:
     void vizinhancaFechada(string nome);
     bool grafoCompleto();
     bool grafoBipartido();
+    void sequenciaGraus();
 
 private:
     Vertice *primeiro;

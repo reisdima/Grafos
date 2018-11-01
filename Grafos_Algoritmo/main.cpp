@@ -18,6 +18,7 @@ void Menu()
     cout << "[10] Vizinhanca fechada de um vertice" << endl;
     cout << "[11] Verificar se o grafo e completo" << endl;
     cout << "[12] Verificar se o grafo e bipartido" << endl;
+    cout << "[13] imprimir sequencia de graus" << endl;
     cout << "[0]  Sair" << endl;
 }
 
@@ -100,6 +101,9 @@ int main()
                 cout << "O grafo e bipartido" << endl;
             else
                 cout << "O grafo nao e bipartido" << endl;
+        }
+        else if(escolha == 13){
+            G.sequenciaGraus();
         }
         else if(escolha==0)
             break;
