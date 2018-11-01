@@ -2,6 +2,7 @@
 #define GRAFO_H
 #include "Vertice.h"
 #include "Aresta.h"
+#include <stack>
 
 class Aresta;
 class Vertice;
@@ -32,6 +33,8 @@ private:
     void aumentaOrdem();
     void diminuiOrdem();
     bool grafoVazio();
+    int getIndex(string *nomes, string nome);
+    bool auxGrafoBipartido(Vertice *auxVertice, stack<string>pilha, int *vizitado, int *coloracao, string *nomes, int cor);
 };
 
 #endif // GRAFO_H

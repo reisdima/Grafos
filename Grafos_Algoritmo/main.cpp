@@ -17,7 +17,8 @@ void Menu()
     cout << "[9]  Vizinhanca aberta de um vertice" << endl;
     cout << "[10] Vizinhanca fechada de um vertice" << endl;
     cout << "[11] Verificar se o grafo e completo" << endl;
-    cout << "[0] Sair" << endl;
+    cout << "[12] Verificar se o grafo e bipartido" << endl;
+    cout << "[0]  Sair" << endl;
 }
 
 
@@ -94,31 +95,30 @@ int main()
             else
                 cout << "O grafo nao e completo" << endl;
         }
+        else if(escolha==12){
+            if(G.grafoBipartido())
+                cout << "O grafo e bipartido" << endl;
+            else
+                cout << "O grafo nao e bipartido" << endl;
+        }
         else if(escolha==0)
             break;
     }
-/*
-    G.adicionaVertice("1");
+
+/*    G.adicionaVertice("1");
     G.adicionaVertice("2");
     G.adicionaVertice("3");
     G.adicionaVertice("4");
+    G.adicionaVertice("5");
+    G.adicionaVertice("6");
     G.adicionaAresta("1", "2");
-    G.adicionaAresta("1", "3");
     G.adicionaAresta("1", "4");
+    //G.adicionaAresta("3", "5");
+    G.adicionaAresta("2", "6");
     G.adicionaAresta("2", "3");
+    G.adicionaAresta("4", "5");
     G.listaAdjacencia();
-    G.removeAresta("1", "2");
-
-    cout << endl;
-    G.listaAdjacencia();
-
-    cout << endl;
-    G.listaAdjacencia();
-    G.adicionaAresta("1", "2");
-    cout << endl;
-    G.listaAdjacencia();
-    G.removeVertice("2");
-    cout << endl;
-    G.listaAdjacencia();*/
+    bool a = G.grafoBipartido();
+    cout << a;*/
     return 0;
 }

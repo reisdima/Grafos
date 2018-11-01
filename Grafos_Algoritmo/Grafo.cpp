@@ -1,4 +1,5 @@
 #include "Grafo.h"
+#include <stack>
 #include <list>
 
 
@@ -306,11 +307,113 @@ bool Grafo::grafoCompleto()
 bool Grafo::grafoBipartido()
 {
     if(!grafoVazio()){
-        list<string> *particao1 = new list<string>;
-        list<string> *particao2 = new list<string>;
-        Vertice *aux = primeiro;
+
+
+
+        stack<string> pilha;
+        int cont;
+        int *vizitado = new int[ordemGrafo];
+        string *nomes = new string[ordemGrafo];
+        int *coloracao = new int[ordemGrafo];
+        Vertice *verticeAux = primeiro;
+        int i=0;
+        while (verticeAux!=NULL){
+            nomes[i] = verticeAux->getNome();
+            i++;
+            verticeAux = verticeAux->getProx();
+        }
+        verticeAux = primeiro;
+        for(int i=0; i<ordemGrafo; i++){
+            vizitado[i] = 0;
+            coloracao[i] = 0;
+        }
+        int cor = 1;
+        return auxGrafoBipartido(verticeAux, pilha, vizitado, coloracao, nomes, cor);
+        /*
+        pilha.push(verticeAux->getNome());
+        int index;
+        while(!pilha.empty()){
+            index = getIndex(nomes, verticeAux->getNome());
+            if(verificado[index]==0){
+                verificado[index] = 1;
+                coloracao[index]  = cor;
+                cor = 2;
+                Aresta *auxAresta = verticeAux->getArestaAdj();
+                while(auxAresta!=NULL){
+
+                }
+            }
+            else{
+
+            }
+
+        }*/
+/*
+    stack<string> *pilha = new <string>stack;
+    int *vizitado = new int[ordemGrafo];
+    string *nomes = new string[ordemGrafo];
+    int *coloracao = new int[ordemGrafo];
+    Vertice *verticeAux = primeiro;
+    while (verticeAux!=NULL){
+        nomes[i] = verticeAux->getNome();
+    }
+    verticeAux = primeiro;
+    for(int i=0; i<ordemGrafo; i++){
+        verificado[i] = 0;
+        coloracao[i] = 0;
+    }
+    int cor = 1;
+*/
+    }
+}
+
+
+bool Grafo::auxGrafoBipartido(Vertice *auxVertice, stack<string>pilha, int *vizitado, int *coloracao, string *nomes, int cor)
+{
+    /*cout <<endl <<  "Cor: " << cor<<endl;
+    if(!pilha.empty())
+        cout << "Topo da pilha: "<< pilha.top() << endl;
+    else
+        cout << "Pilha vazia" << endl;*/
+    if(auxVertice==NULL)
+        return true;
+    int index = getIndex(nomes, auxVertice->getNome());
+    if(vizitado[index] == 0){
+        //cout << "Adicionando na pilha: " << auxVertice->getNome() << endl;
+        pilha.push(auxVertice->getNome());
+        vizitado[index] = 1;
+        coloracao[index] = cor;
+        if(cor==1)
+            cor = 2;
+        else
+            cor = 1;
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        while(auxAresta!=NULL){
+            bool a = auxGrafoBipartido(getVertice(auxAresta->getVerticeAdj()), pilha, vizitado, coloracao, nomes, cor);
+            if(a==false)
+                return false;
+            auxAresta = auxAresta->getProx();
+        }
+        pilha.pop();
+        return true;
+    }
+    else{
+        //cout << "Vertice " << auxVertice->getNome() << " ja vizitado" << endl << endl;
+        if(coloracao[index]!=cor)
+            return false;
+        else
+            return true;
 
     }
+}
+
+int Grafo::getIndex(string *nomes, string nome)
+{
+    for(int i=0; i<ordemGrafo; i++){
+        if(nomes[i] == nome)
+            return i;
+    }
+
 }
 
 
