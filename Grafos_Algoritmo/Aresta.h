@@ -17,13 +17,16 @@ public:
     void setProx(Aresta *p); //define para onde vai a aresta, ou seja o "nó final"
     void setVerticeAdj(string nome);
     void setEnderecoVerticeAdj(Vertice *adjacente);
+    void setNomeOrigem(string nome);
 
     float getPeso();
+    string getNomeOrigem();
     string getVerticeAdj();
     Aresta *getProx();
     Vertice *getEnderecoVerticeAdj();
 
 private:
+    string verticeOrigem;
     float peso;
     Aresta *prox;
     string verticeAdj;

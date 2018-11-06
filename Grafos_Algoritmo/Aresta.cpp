@@ -55,3 +55,13 @@ Vertice *Aresta::getEnderecoVerticeAdj()
 {
     return adj;
 }
+
+void Aresta::setNomeOrigem(string nome)
+{
+    this->verticeOrigem = nome;
+}
+
+string Aresta::getNomeOrigem()
+{
+    return this->verticeOrigem;
+}

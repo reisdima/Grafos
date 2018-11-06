@@ -3,6 +3,7 @@
 #include "Vertice.h"
 #include "Aresta.h"
 #include <stack>
+#include <list>
 
 class Aresta;
 class Vertice;
@@ -14,6 +15,7 @@ public:
     ~Grafo();
     void adicionaVertice(string nome);
     void adicionaAresta(string nome1, string nome2);
+    void adicionaAresta(string nome1, string nome2, float peso);
     void removeVertice(string nome);
     void removeAresta(string nome1, string nome2);
     void listaAdjacencia();
@@ -25,6 +27,8 @@ public:
     bool grafoCompleto();
     bool grafoBipartido();
     void sequenciaGraus();
+    void arvoreGeradoraMinimaKruskal();
+    bool existeCiclo();
 
 private:
     Vertice *primeiro;
@@ -36,6 +40,9 @@ private:
     bool grafoVazio();
     int getIndex(string *nomes, string nome);
     bool auxGrafoBipartido(Vertice *auxVertice, stack<string>pilha, int *vizitado, int *coloracao, string *nomes, int cor);
+    bool contemAresta(string origem, string destino, list<Aresta> *arestas);
+    list<Aresta> *ordernarArestasPorPeso(list<Aresta> *arestas);
+    bool formaCiclo(list<Aresta> *solucao, Aresta *aresta);
 };
 
 #endif // GRAFO_H

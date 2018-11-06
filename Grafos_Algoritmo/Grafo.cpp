@@ -1,6 +1,7 @@
 #include "Grafo.h"
 #include <stack>
 #include <list>
+#include <queue>
 
 
 Grafo::Grafo()
@@ -74,7 +75,55 @@ void Grafo::adicionaAresta(string nome1, string nome2)
     Aresta *nova2 = new Aresta();
     nova1->setVerticeAdj(nome2);
     nova2->setVerticeAdj(nome1);
+    nova1->setNomeOrigem(nome1);
+    nova2->setNomeOrigem(nome2);
 
+    nova1->setEnderecoVerticeAdj(no2);
+    nova2->setEnderecoVerticeAdj(no1);
+
+    Aresta *aux = no1->getArestaAdj();
+    if(aux == NULL){
+        no1->setArestaAdj(nova1);
+        nova1->setProx(NULL);
+    }
+    else{
+        while(aux->getProx()!=NULL)
+            aux = aux->getProx();
+        aux->setProx(nova1);
+        nova1->setProx(NULL);
+    }
+    aux = no2->getArestaAdj();
+    if(aux == NULL){
+        no2->setArestaAdj(nova2);
+        nova2->setProx(NULL);
+    }
+    else{
+        while(aux->getProx() != NULL)
+            aux = aux->getProx();
+        aux->setProx(nova2);
+        nova2->setProx(NULL);
+    }
+    no1->aumentaGrau();
+    no2->aumentaGrau();
+}
+
+void Grafo::adicionaAresta(string nome1, string nome2, float peso)
+{
+    if(!existeVertice(nome1))
+        adicionaVertice(nome1);
+    if(!existeVertice(nome2))
+        adicionaVertice(nome2);
+    Vertice *no1 = getVertice(nome1);
+    Vertice *no2 = getVertice(nome2);
+
+    Aresta *nova1 = new Aresta();
+    Aresta *nova2 = new Aresta();
+    nova1->setVerticeAdj(nome2);
+    nova2->setVerticeAdj(nome1);
+    nova1->setNomeOrigem(nome1);
+    nova2->setNomeOrigem(nome2);
+    nova1->setPeso(peso);
+    nova2->setPeso(peso);
 
     nova1->setEnderecoVerticeAdj(no2);
     nova2->setEnderecoVerticeAdj(no1);
@@ -450,5 +499,213 @@ void Grafo::sequenciaGraus()
     }
     else{
         //grafo vazio
+    }
+}
+
+
+
+void Grafo::arvoreGeradoraMinimaKruskal()
+{
+    if(!grafoVazio()){
+        list<Aresta> *arestas = new list<Aresta>;
+        Vertice *auxVertice = primeiro;
+        while(auxVertice!=NULL){
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                if(!contemAresta(auxAresta->getNomeOrigem(), auxAresta->getVerticeAdj(), arestas)){
+                    arestas->push_back(*auxAresta);
+                }
+                auxAresta = auxAresta->getProx();
+            }
+            auxVertice = auxVertice->getProx();
+        }
+        arestas = ordernarArestasPorPeso(arestas);
+        list<Aresta>::iterator it;
+        for(it=arestas->begin(); it!=arestas->end(); it++){
+            cout << it->getPeso() << " ";
+        }
+        cout << endl << endl;
+        list<Aresta> *solucao = new list<Aresta>;
+        it = arestas->begin();
+        while(it!=arestas->end()){
+            Aresta auxAresta = *it;
+            cout << "Aresta sendo observada: " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+            if(!formaCiclo(solucao, &auxAresta)){
+                solucao->push_back(auxAresta);
+            }
+            it++;
+        }
+        for(it = solucao->begin(); it!=solucao->end(); it++){
+            cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << "  (" << it->getPeso() << ")" << endl;
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    if(!grafoVazio()){
+        string *nomes = new string[ordemGrafo];
+        int *verticesNaSolucao = new int[ordemGrafo];
+        for(int i=0; i<ordemGrafo; i++)
+            verticesNaSolucao[i] = 0;
+        Vertice *auxVertice = primeiro;
+        int i=0;
+        while(auxVertice!=NULL){
+            nomes[i] = auxVertice->getNome();
+            i++;
+            auxVertice = auxVertice->getProx();
+        }
+
+        list<Aresta> *arestas = new list<Aresta>;
+        auxVertice = primeiro;
+        while(auxVertice!=NULL){
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                if(!contemAresta(auxVertice->getNome(), auxAresta->getVerticeAdj(), *arestas))
+                    arestas->push_back(*auxAresta);
+                auxAresta = auxAresta->getProx();
+            }
+            auxVertice = auxVertice->getProx();
+        }
+        list<Aresta>::iterator it;
+        for(it = arestas->begin(); it!=arestas->end(); it++){
+            cout << it->getPeso() << " ";
+        }
+        arestas = ordernarArestasPorPeso(arestas);
+        list<Aresta> *solucao = new list<Aresta>;
+
+        while(!arestas->empty()){
+
+            it = arestas->begin();
+            arestas->pop_front();
+            Aresta aux = *it;
+            int index1 = getIndex(nomes, aux.getNomeOrigem());
+            int index2 = getIndex(nomes, aux.getVerticeAdj());
+            if(verticesNaSolucao[index1]==0 || verticesNaSolucao[index2]==0){
+                solucao->push_back(*it);
+                verticesNaSolucao[index1] = 1;
+                verticesNaSolucao[index2] = 1;
+            }
+        }
+        //cout << "Teste";
+        cout << "A arvore geradora minima eh:" << endl;
+        for(it = solucao->begin(); it!=solucao->end(); it++){
+            cout << "Aresta " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+        }
+    }
+    */
+}
+
+bool Grafo::contemAresta(string origem, string destino, list<Aresta> *arestas)
+{
+    list<Aresta>::iterator it;
+    for(it = arestas->begin(); it!=arestas->end(); it++){
+        if((it->getNomeOrigem()==origem && it->getVerticeAdj()==destino) || (it->getNomeOrigem()==destino && it->getVerticeAdj()==origem))
+            return true;
+    }
+    return false;
+}
+
+list<Aresta> *Grafo::ordernarArestasPorPeso(list<Aresta> *arestas)
+{
+
+    list<Aresta>::iterator it1;
+    list<Aresta>::iterator it2;
+
+    for(it1 = arestas->begin(); it1!=arestas->end(); it1++){
+        for(it2 = arestas->begin(); it2!=arestas->end(); it2++){
+            if(it2->getPeso()>it1->getPeso()){
+                Aresta auxAresta = *it2;
+                //cout << auxAresta.getPeso() << " ";
+                *it2 = *it1;
+                *it1 = auxAresta;
+            }
+        }
+    }
+
+    return arestas;
+}
+
+bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
+{
+    //cout << endl;
+    Grafo G1;
+    list<Aresta>::iterator it;
+    it = solucao->begin();
+
+
+    while(it!=solucao->end()){
+
+        Aresta auxAresta = *it;
+        G1.adicionaAresta(it->getNomeOrigem(), it->getVerticeAdj());
+        it++;
+
+    }
+    G1.adicionaAresta(aresta->getNomeOrigem(), aresta->getVerticeAdj());
+    G1.listaAdjacencia();
+    cout << endl;
+    if(solucao->empty())
+        return false;
+    return G1.existeCiclo();
+}
+
+
+bool Grafo::existeCiclo()
+{
+    if(!grafoVazio()){
+        queue<string> fila;
+        string *parents = new string[ordemGrafo];
+        string *nomes = new string[ordemGrafo];
+        int *visitados = new int[ordemGrafo];
+        int index;
+        Vertice *auxVertice = primeiro;
+        int i = 0;
+        while(auxVertice!=NULL){
+            visitados[i] = 0;
+            parents[i] = "0";
+            nomes[i] = auxVertice->getNome();
+            i++;
+            auxVertice = auxVertice->getProx();
+        }
+        auxVertice = primeiro;
+        fila.push(auxVertice->getNome());
+        index = getIndex(nomes, auxVertice->getNome());
+        visitados[index] = 1;
+        while(!fila.empty()){
+            string atual = fila.front();
+            fila.pop();
+            auxVertice = getVertice(atual);
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                index = getIndex(nomes, auxAresta->getVerticeAdj());
+                if(visitados[index]==0){
+                    visitados[index] = 1;
+                    fila.push(auxAresta->getVerticeAdj());
+                    parents[index] = atual;
+                }
+                else{
+                    index = getIndex(nomes, atual);
+                    if(parents[index] != auxAresta->getVerticeAdj()){
+                        return true;
+                    }
+                }
+                auxAresta = auxAresta->getProx();
+            }
+        }
+        return false;
     }
 }
