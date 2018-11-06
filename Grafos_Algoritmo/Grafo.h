@@ -29,6 +29,7 @@ public:
     void sequenciaGraus();
     void arvoreGeradoraMinimaKruskal();
     bool existeCiclo();
+    void arvoreGeradoraMinimaPrim();
 
 private:
     Vertice *primeiro;

@@ -1,8 +1,10 @@
 #include "Grafo.h"
 #include <stack>
+#include <stdio.h>
+#include <stdlib.h>
 #include <list>
 #include <queue>
-
+#include <time.h>
 
 Grafo::Grafo()
 {
@@ -538,76 +540,7 @@ void Grafo::arvoreGeradoraMinimaKruskal()
         for(it = solucao->begin(); it!=solucao->end(); it++){
             cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << "  (" << it->getPeso() << ")" << endl;
         }
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    if(!grafoVazio()){
-        string *nomes = new string[ordemGrafo];
-        int *verticesNaSolucao = new int[ordemGrafo];
-        for(int i=0; i<ordemGrafo; i++)
-            verticesNaSolucao[i] = 0;
-        Vertice *auxVertice = primeiro;
-        int i=0;
-        while(auxVertice!=NULL){
-            nomes[i] = auxVertice->getNome();
-            i++;
-            auxVertice = auxVertice->getProx();
-        }
-
-        list<Aresta> *arestas = new list<Aresta>;
-        auxVertice = primeiro;
-        while(auxVertice!=NULL){
-            Aresta *auxAresta = auxVertice->getArestaAdj();
-            while(auxAresta!=NULL){
-                if(!contemAresta(auxVertice->getNome(), auxAresta->getVerticeAdj(), *arestas))
-                    arestas->push_back(*auxAresta);
-                auxAresta = auxAresta->getProx();
-            }
-            auxVertice = auxVertice->getProx();
-        }
-        list<Aresta>::iterator it;
-        for(it = arestas->begin(); it!=arestas->end(); it++){
-            cout << it->getPeso() << " ";
-        }
-        arestas = ordernarArestasPorPeso(arestas);
-        list<Aresta> *solucao = new list<Aresta>;
-
-        while(!arestas->empty()){
-
-            it = arestas->begin();
-            arestas->pop_front();
-            Aresta aux = *it;
-            int index1 = getIndex(nomes, aux.getNomeOrigem());
-            int index2 = getIndex(nomes, aux.getVerticeAdj());
-            if(verticesNaSolucao[index1]==0 || verticesNaSolucao[index2]==0){
-                solucao->push_back(*it);
-                verticesNaSolucao[index1] = 1;
-                verticesNaSolucao[index2] = 1;
-            }
-        }
-        //cout << "Teste";
-        cout << "A arvore geradora minima eh:" << endl;
-        for(it = solucao->begin(); it!=solucao->end(); it++){
-            cout << "Aresta " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
-        }
-    }
-    */
 }
 
 bool Grafo::contemAresta(string origem, string destino, list<Aresta> *arestas)
@@ -642,6 +575,8 @@ list<Aresta> *Grafo::ordernarArestasPorPeso(list<Aresta> *arestas)
 
 bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
 {
+    if(solucao->empty())
+        return false;
     //cout << endl;
     Grafo G1;
     list<Aresta>::iterator it;
@@ -656,10 +591,8 @@ bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
 
     }
     G1.adicionaAresta(aresta->getNomeOrigem(), aresta->getVerticeAdj());
-    G1.listaAdjacencia();
-    cout << endl;
-    if(solucao->empty())
-        return false;
+    //G1.listaAdjacencia();
+    //cout << endl;
     return G1.existeCiclo();
 }
 
@@ -709,3 +642,58 @@ bool Grafo::existeCiclo()
         return false;
     }
 }
+
+
+void Grafo::arvoreGeradoraMinimaPrim()
+{
+    if(!grafoVazio()){
+        int *inseridosNaArvore = new int[ordemGrafo];
+        list<string> *verticesNaSolucao = new list<string>;
+        list<string> *verticesForaDaSolucao= new list<string>;
+
+        Vertice *auxVertice = primeiro;
+        while(auxVertice!=NULL){
+            verticesForaDaSolucao->push_back(auxVertice->getNome());
+            auxVertice = auxVertice->getProx();
+        }
+
+        srand(time(NULL));
+        int verticeAleatorio = rand()%ordemGrafo;
+        auxVertice = primeiro;
+        for(int i=0; i<verticeAleatorio; i++){
+            auxVertice = auxVertice->getProx();
+        }
+
+
+        verticesNaSolucao->push_back(auxVertice->getNome());
+        verticesForaDaSolucao->remove(auxVertice->getNome());
+
+        list<Aresta> *solucao = new list<Aresta>;
+        while(!verticesForaDaSolucao->empty()){
+            list<Aresta> *arestasCandidatas = new list<Aresta>;
+            list<string>::iterator it1;
+            for(it1=verticesNaSolucao->begin(); it1!=verticesNaSolucao->end(); it1++){
+                Aresta *auxAresta = getVertice(*it1)->getArestaAdj();
+                while(auxAresta!=NULL){
+                    if(!contemAresta(getVertice(*it1)->getNome(), auxAresta->getVerticeAdj(), arestasCandidatas) && !formaCiclo(solucao, auxAresta)){
+                        arestasCandidatas->push_back(*auxAresta);
+                    }
+                    auxAresta = auxAresta->getProx();
+                }
+            }
+            arestasCandidatas = ordernarArestasPorPeso(arestasCandidatas);
+            list<Aresta>::iterator it2;
+            it2 = arestasCandidatas->begin();
+            solucao->push_back(*it2);
+            verticesNaSolucao->push_back(it2->getVerticeAdj());
+            verticesForaDaSolucao->remove(it2->getVerticeAdj());
+        }
+        list<Aresta>::iterator it;
+        for(it=solucao->begin(); it!=solucao->end(); it++){
+            cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+        }
+        cout << "Teste";
+
+    }
+}
+
