@@ -30,6 +30,7 @@ public:
     void arvoreGeradoraMinimaKruskal();
     bool existeCiclo();
     void arvoreGeradoraMinimaPrim();
+    void caminhoMinimoDijkstra(string vertice1, string vertice2);
 
 private:
     Vertice *primeiro;
@@ -44,6 +45,7 @@ private:
     bool contemAresta(string origem, string destino, list<Aresta> *arestas);
     list<Aresta> *ordernarArestasPorPeso(list<Aresta> *arestas);
     bool formaCiclo(list<Aresta> *solucao, Aresta *aresta);
+    int distanciaMinima(int dist[], bool sptSet[]);
 };
 
 #endif // GRAFO_H

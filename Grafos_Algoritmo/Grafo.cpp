@@ -697,3 +697,71 @@ void Grafo::arvoreGeradoraMinimaPrim()
     }
 }
 
+void Grafo::caminhoMinimoDijkstra(string vertice1, string vertice2)
+{
+    string *nomes = new string[ordemGrafo];
+    int index;
+    int *dist = new int[ordemGrafo];
+    bool *sptSet = new bool[ordemGrafo];
+    list<string> verticesNaSolucao;
+    Vertice *auxVertice = primeiro;
+    for(int i=0; i<ordemGrafo; i++){
+        dist[i] = INT_MAX;
+        sptSet[i] = false;
+        nomes[i] = auxVertice->getNome();
+        auxVertice = auxVertice->getProx();
+    }
+    index = getIndex(nomes, vertice1);
+    dist[index] = 0;
+
+    for(int count=0; count<ordemGrafo-1; count++){
+        index = distanciaMinima(dist, sptSet);
+        sptSet[index] = true;
+        verticesNaSolucao.push_back(nomes[index]);
+        list<string> verticesCandidatos;
+        list<string>::iterator it;
+        for(it=verticesNaSolucao.begin(); it!=verticesNaSolucao.end(); it++){
+            auxVertice = getVertice(*it);
+            int index2 = getIndex(nomes, *it);
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                index2 = getIndex(nomes, auxAresta->getVerticeAdj());
+                if(!sptSet[index2] && (dist[index]+auxAresta->getPeso()<dist[index2])){
+                    dist[index2] = dist[index] + auxAresta->getPeso();
+                    verticesCandidatos.push_back(auxAresta->getVerticeAdj());
+                }
+                auxAresta = auxAresta->getProx();
+            }
+        }
+
+    }
+    cout << "Vertice \tDistancia do vertice origem" << endl;
+    for(int i=0; i<ordemGrafo; i++){
+        index = getIndex(nomes, nomes[i]);
+        cout << nomes[i] << " \t\t" << dist[index] << endl;
+    }
+
+
+
+}
+
+
+int Grafo::distanciaMinima(int dist[], bool sptSet[])
+{
+    int menor = INT_MAX;
+    int indexMenor;
+    for(int i=0; i<ordemGrafo; i++){
+        if(sptSet[i]==false && dist[i]<menor){
+            indexMenor = i;
+            menor = dist[i];
+        }
+    }
+
+    return indexMenor;
+}
+
+
+
+
+
+
