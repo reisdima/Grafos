@@ -5,6 +5,7 @@
 #include <list>
 #include <queue>
 #include <time.h>
+#define INF 99999
 
 Grafo::Grafo()
 {
@@ -64,7 +65,7 @@ void Grafo::adicionaVertice(string nome)
     aumentaOrdem();
 }
 
-void Grafo::adicionaAresta(string nome1, string nome2)
+void Grafo::adicionaAresta(string nome1, string nome2, bool direcionado)
 {
     if(!existeVertice(nome1))
         adicionaVertice(nome1);
@@ -73,43 +74,49 @@ void Grafo::adicionaAresta(string nome1, string nome2)
     Vertice *no1 = getVertice(nome1);
     Vertice *no2 = getVertice(nome2);
 
-    Aresta *nova1 = new Aresta();
-    Aresta *nova2 = new Aresta();
-    nova1->setVerticeAdj(nome2);
-    nova2->setVerticeAdj(nome1);
-    nova1->setNomeOrigem(nome1);
-    nova2->setNomeOrigem(nome2);
 
+    Aresta *nova1 = new Aresta();
+    nova1->setVerticeAdj(nome2);
+    nova1->setNomeOrigem(nome1);
     nova1->setEnderecoVerticeAdj(no2);
-    nova2->setEnderecoVerticeAdj(no1);
+    nova1->setProx(NULL);
+
 
     Aresta *aux = no1->getArestaAdj();
     if(aux == NULL){
         no1->setArestaAdj(nova1);
-        nova1->setProx(NULL);
+
     }
     else{
         while(aux->getProx()!=NULL)
             aux = aux->getProx();
         aux->setProx(nova1);
-        nova1->setProx(NULL);
-    }
-    aux = no2->getArestaAdj();
-    if(aux == NULL){
-        no2->setArestaAdj(nova2);
-        nova2->setProx(NULL);
-    }
-    else{
-        while(aux->getProx() != NULL)
-            aux = aux->getProx();
-        aux->setProx(nova2);
-        nova2->setProx(NULL);
     }
     no1->aumentaGrau();
+
+    if(!direcionado){
+        Aresta *nova2 = new Aresta();
+        nova2->setVerticeAdj(nome1);
+        nova2->setNomeOrigem(nome2);
+        nova2->setEnderecoVerticeAdj(no1);
+        nova2->setProx(NULL);
+
+        aux = no2->getArestaAdj();
+        if(aux == NULL){
+            no2->setArestaAdj(nova2);
+        }
+        else{
+            while(aux->getProx() != NULL)
+                aux = aux->getProx();
+            aux->setProx(nova2);
+        }
+        no2->aumentaGrau();
+    }
+
     no2->aumentaGrau();
 }
 
-void Grafo::adicionaAresta(string nome1, string nome2, float peso)
+void Grafo::adicionaAresta(string nome1, string nome2, float peso, bool direcionado)
 {
     if(!existeVertice(nome1))
         adicionaVertice(nome1);
@@ -118,41 +125,47 @@ void Grafo::adicionaAresta(string nome1, string nome2, float peso)
     Vertice *no1 = getVertice(nome1);
     Vertice *no2 = getVertice(nome2);
 
-    Aresta *nova1 = new Aresta();
-    Aresta *nova2 = new Aresta();
-    nova1->setVerticeAdj(nome2);
-    nova2->setVerticeAdj(nome1);
-    nova1->setNomeOrigem(nome1);
-    nova2->setNomeOrigem(nome2);
-    nova1->setPeso(peso);
-    nova2->setPeso(peso);
 
+    Aresta *nova1 = new Aresta();
+    nova1->setVerticeAdj(nome2);
+    nova1->setNomeOrigem(nome1);
     nova1->setEnderecoVerticeAdj(no2);
-    nova2->setEnderecoVerticeAdj(no1);
+    nova1->setProx(NULL);
+    nova1->setPeso(peso);
+
 
     Aresta *aux = no1->getArestaAdj();
     if(aux == NULL){
         no1->setArestaAdj(nova1);
-        nova1->setProx(NULL);
+
     }
     else{
         while(aux->getProx()!=NULL)
             aux = aux->getProx();
         aux->setProx(nova1);
-        nova1->setProx(NULL);
-    }
-    aux = no2->getArestaAdj();
-    if(aux == NULL){
-        no2->setArestaAdj(nova2);
-        nova2->setProx(NULL);
-    }
-    else{
-        while(aux->getProx() != NULL)
-            aux = aux->getProx();
-        aux->setProx(nova2);
-        nova2->setProx(NULL);
     }
     no1->aumentaGrau();
+
+    if(!direcionado){
+        Aresta *nova2 = new Aresta();
+        nova2->setVerticeAdj(nome1);
+        nova2->setNomeOrigem(nome2);
+        nova2->setEnderecoVerticeAdj(no1);
+        nova2->setProx(NULL);
+        nova2->setPeso(peso);
+
+        aux = no2->getArestaAdj();
+        if(aux == NULL){
+            no2->setArestaAdj(nova2);
+        }
+        else{
+            while(aux->getProx() != NULL)
+                aux = aux->getProx();
+            aux->setProx(nova2);
+        }
+        no2->aumentaGrau();
+    }
+
     no2->aumentaGrau();
 }
 
@@ -586,11 +599,11 @@ bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
     while(it!=solucao->end()){
 
         Aresta auxAresta = *it;
-        G1.adicionaAresta(it->getNomeOrigem(), it->getVerticeAdj());
+        G1.adicionaAresta(it->getNomeOrigem(), it->getVerticeAdj(), 0);
         it++;
 
     }
-    G1.adicionaAresta(aresta->getNomeOrigem(), aresta->getVerticeAdj());
+    G1.adicionaAresta(aresta->getNomeOrigem(), aresta->getVerticeAdj(), 0);
     //G1.listaAdjacencia();
     //cout << endl;
     return G1.existeCiclo();
@@ -706,7 +719,7 @@ void Grafo::caminhoMinimoDijkstra(string vertice1, string vertice2)
     list<string> verticesNaSolucao;
     Vertice *auxVertice = primeiro;
     for(int i=0; i<ordemGrafo; i++){
-        dist[i] = INT_MAX;
+        dist[i] = INF;
         sptSet[i] = false;
         nomes[i] = auxVertice->getNome();
         auxVertice = auxVertice->getProx();
@@ -748,7 +761,7 @@ void Grafo::caminhoMinimoDijkstra(string vertice1, string vertice2)
 
 int Grafo::distanciaMinima(int dist[], bool sptSet[])
 {
-    int menor = INT_MAX;
+    int menor = INF;
     int indexMenor;
     for(int i=0; i<ordemGrafo; i++){
         if(sptSet[i]==false && dist[i]<menor){
@@ -760,7 +773,86 @@ int Grafo::distanciaMinima(int dist[], bool sptSet[])
     return indexMenor;
 }
 
+void Grafo::caminhoMinimoFloyd()
+{
+    if(!grafoVazio()){
+        string *nomes = new string[ordemGrafo];
+        int **dist = new int*[ordemGrafo];
+        for(int i=0; i<ordemGrafo; i++){
+            dist[i] = new int[ordemGrafo];
+        }
+        Vertice *auxVertice = primeiro;
 
+        for(int i=0; i<ordemGrafo; i++){
+            nomes[i] = auxVertice->getNome();
+            auxVertice = auxVertice->getProx();
+        }
+
+        auxVertice = primeiro;
+        for(int i=0; i<ordemGrafo; i++){
+            for(int j=0; j<ordemGrafo; j++){
+                if(i==j)
+                    dist[i][j] = 0;
+                else
+                    dist[i][j] = INF;
+            }
+        }
+        Aresta *auxAresta;
+        while(auxVertice!=NULL){
+            int index1 = getIndex(nomes, auxVertice->getNome());
+            auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                int index2 = getIndex(nomes, auxAresta->getVerticeAdj());
+                dist[index1][index2] = auxAresta->getPeso();
+                auxAresta = auxAresta->getProx();
+            }
+            auxVertice = auxVertice->getProx();
+        }/*
+        for(int i=0; i<ordemGrafo; i++){
+            for(int j=0; j<ordemGrafo; j++)
+                cout << dist[i][j] << "  ";
+            cout << endl;
+        }*/
+        cout << endl;
+        auxVertice = primeiro;
+        Vertice *intermediario = primeiro;
+        for(int k=0; k<ordemGrafo; k++){
+            Vertice *atual = primeiro;
+            int index1 = getIndex(nomes, intermediario->getNome());
+            for(int i=0; i<ordemGrafo; i++){
+                Vertice *destino = primeiro;
+                int index2 = getIndex(nomes, atual->getNome());
+                for(int j=0; j<ordemGrafo; j++){
+                    int index3 = getIndex(nomes, destino->getNome());
+                    if(dist[index2][index1] + dist[index1][index3] < dist[index2][index3]){
+
+                        dist[index2][index3] = dist[index2][index1] + dist[index1][index3];
+
+                    }
+                    destino = destino->getProx();
+                    //cout << index1 << "  " << index2 << "  " << index3 << "  " << endl;
+                }
+                atual = atual->getProx();
+            }
+            intermediario = intermediario->getProx();
+        }
+
+
+
+        for(int i=0; i<ordemGrafo; i++){
+            for(int j=0; j<ordemGrafo; j++){
+                if(dist[i][j] == INF)
+                    cout << "INF  ";
+                else
+                    cout << dist[i][j] << "    ";
+            }
+            cout << endl;
+        }
+
+
+
+    }
+}
 
 
 

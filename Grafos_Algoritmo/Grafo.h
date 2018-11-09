@@ -14,8 +14,8 @@ public:
     Grafo();
     ~Grafo();
     void adicionaVertice(string nome);
-    void adicionaAresta(string nome1, string nome2);
-    void adicionaAresta(string nome1, string nome2, float peso);
+    void adicionaAresta(string nome1, string nome2, bool direcionado);
+    void adicionaAresta(string nome1, string nome2, float peso, bool direcionado);
     void removeVertice(string nome);
     void removeAresta(string nome1, string nome2);
     void listaAdjacencia();
@@ -31,6 +31,7 @@ public:
     bool existeCiclo();
     void arvoreGeradoraMinimaPrim();
     void caminhoMinimoDijkstra(string vertice1, string vertice2);
+    void caminhoMinimoFloyd();
 
 private:
     Vertice *primeiro;
