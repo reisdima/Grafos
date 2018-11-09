@@ -848,12 +848,138 @@ void Grafo::caminhoMinimoFloyd()
             }
             cout << endl;
         }
+    }
+}
+
+void Grafo::fechoTransitivoDireto(string nome, bool direcionado)
+{
+    if(direcionado && !grafoVazio()){
+        Vertice *origem = getVertice(nome);
+        list<string> alcancaveis;
+        bool *verticesNaSolucao = new bool[ordemGrafo];
+        bool *visitados = new bool[ordemGrafo];
+        string *nomes = new string[ordemGrafo];
+        Vertice *auxVertice = primeiro;
+        for(int i=0; i<ordemGrafo; i++){
+            visitados[i] = false;
+            nomes[i] = auxVertice->getNome();
+            auxVertice = auxVertice->getProx();
+        }
+        stack<string> pilha;
+        auxVertice = origem;
+        Aresta *auxAresta = origem->getArestaAdj();
+        pilha.push(origem->getNome());
+        while(!pilha.empty()){
+            int index = getIndex(nomes, pilha.top());
+            auxVertice = getVertice(pilha.top());
+
+            auxAresta = auxVertice->getArestaAdj();
+            bool achou = false;
+            while(auxAresta!=NULL){
+                index = getIndex(nomes, auxAresta->getVerticeAdj());
+                if(!visitados[index]){
+                    //cout << "Visitando vertice  " << auxAresta->getVerticeAdj() << endl;
+                    visitados[index] = true;
+                    alcancaveis.push_back(auxAresta->getVerticeAdj());
+                    auxVertice = getVertice(auxAresta->getVerticeAdj());
+                    pilha.push(auxVertice->getNome());
+                     achou = true;
+                    break;
+                }
+                auxAresta = auxAresta->getProx();
+            }
+            if(!achou){
+                pilha.pop();
+            }
+        }
+
+        list<string>::iterator it;
+        for(it=alcancaveis.begin(); it!=alcancaveis.end(); it++){
+            cout << *it << "  ";
+        }
+    }
+}
+
+void Grafo::fechoTransitivoIndireto(string nome, bool direcionado)
+{
+    if(direcionado && !grafoVazio()){
+        list<string> solucao;
+        bool **alcansaveis = new bool*[ordemGrafo];
+        bool *verticeNaSolucao = new bool[ordemGrafo];
+        string *nomes = new string[ordemGrafo];
+        Vertice *auxVertice = primeiro;
+        for(int i=0; i<ordemGrafo; i++){
+            alcansaveis[i] = new bool[ordemGrafo];
+            nomes[i] = auxVertice->getNome();
+            auxVertice = auxVertice->getProx();
+            verticeNaSolucao[i] = false;
+        }
+        for(int i=0; i<ordemGrafo; i++){
+            for(int j=0; j<ordemGrafo; j++){
+                alcansaveis[i][j] = 0;
+            }
+        }
+        auxVertice = primeiro;
+        int index1;
+        while(auxVertice!=NULL){
+            index1 = getIndex(nomes, auxVertice->getNome());
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                int index2 = getIndex(nomes, auxAresta->getVerticeAdj());
+                alcansaveis[index1][index2] = 1;
+                auxAresta = auxAresta->getProx();
+            }
+            auxVertice = auxVertice->getProx();
+        }
+
+        auxVertice = primeiro;
+        Vertice *intermediario = primeiro;
+
+        for(int i=0; i<ordemGrafo; i++){
+            for(int j=0; j<ordemGrafo; j++){
+                cout << alcansaveis[i][j] << "  ";
+            }
+            cout << endl;
+        }
+        cout << endl << endl;
+
+
+        for(int k=0; k<ordemGrafo; k++){
+            Vertice *atual = primeiro;
+            index1 = getIndex(nomes, intermediario->getNome());
+            for(int i=0; i<ordemGrafo; i++){
+                Vertice *destino = primeiro;
+                int index2 = getIndex(nomes, atual->getNome());
+                for(int j=0; j<ordemGrafo; j++){
+                    int index3 = getIndex(nomes, destino->getNome());
+                    alcansaveis[i][j] = alcansaveis[i][j] || (alcansaveis[i][k] && alcansaveis[k][j]);
+                    if(destino->getNome()==nome && alcansaveis[i][j] && !verticeNaSolucao[index2]){
+                        verticeNaSolucao[index2] = true;
+                        solucao.push_back(atual->getNome());
+                    }
+                    destino = destino->getProx();
+
+                    //cout << index1 << "  " << index2 << "  " << index3 << endl;
+                }
+                atual = atual->getProx();
+            }
+            intermediario = intermediario->getProx();
+        }
+        for(int i=0; i<ordemGrafo; i++){
+            for(int j=0; j<ordemGrafo; j++){
+                cout << alcansaveis[i][j] << "  ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+        list<string>::iterator it;
+        for(it=solucao.begin(); it!=solucao.end(); it++){
+            cout << *it << "  ";
+        }
 
 
 
     }
 }
-
-
 
 

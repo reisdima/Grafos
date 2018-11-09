@@ -32,6 +32,8 @@ public:
     void arvoreGeradoraMinimaPrim();
     void caminhoMinimoDijkstra(string vertice1, string vertice2);
     void caminhoMinimoFloyd();
+    void fechoTransitivoDireto(string nome, bool direcionado);
+    void fechoTransitivoIndireto(string nomes, bool direcionado);
 
 private:
     Vertice *primeiro;
