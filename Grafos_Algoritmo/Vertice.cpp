@@ -4,7 +4,8 @@ Vertice::Vertice() //contrutor, define a aresta adjascente como full e define se
 {
     arestaAdj = NULL;
     prox = NULL;
-    grau = 0;
+    grauEntrada = 0;
+    grauSaida = 0;
 }
 
 Vertice::~Vertice()
@@ -27,9 +28,14 @@ void Vertice::setProx(Vertice *p)   //define um proximo vertice para o vertice a
     this->prox = p;
 }
 
-int Vertice::getGrau()  //retorna o grau do vertice
+int Vertice::getGrauEntrada()  //retorna o grau do vertice
 {
-    return grau;
+    return grauEntrada;
+}
+
+int Vertice::getGrauSaida()
+{
+    return grauSaida;
 }
 
 string Vertice::getNome() //retorna o grau do vertice
@@ -46,13 +52,44 @@ Vertice *Vertice::getProx()
 {
     return prox;
 }
-
+/*
 void Vertice::aumentaGrau() //utilizado para aumentar o grau do vertice quando é adicionada uma nova aresta
 {
-    grau++;
+    grauEntrada++;
 }
 
 void Vertice::diminuiGrau() //utilizada para diminuir o grau do vertice quando uma aresta é removida
 {
     grau--;
 }
+*/
+void Vertice::aumentaGrauEntrada()
+{
+    grauEntrada++;
+}
+
+void Vertice::aumentaGrauSaida()
+{
+    grauSaida++;
+}
+
+void Vertice::diminuiGrauEntrada()
+{
+    grauEntrada--;
+}
+
+
+void Vertice::diminuiGrauSaida()
+{
+    grauSaida--;
+}
+
+
+
+
+
+
+
+
+
+

@@ -29,24 +29,25 @@ int main()
     Grafo G;
     bool direcionado;
 
-    /*
-    cout << "O grafo sera direcionado?" << endl;
+
+/*
+    cout << "O grafo sera direcionado?" << endl << endl;
     cout << "[0] Nao" << endl << "[1] Sim" << endl;
     cin >> direcionado;
-    */
 
-    direcionado = true;
+    direcionado = false;
 
-    /*
     int escolha;
-    cout << "Como voce ira montar o grafo?" << endl;
+    /*cout << endl << "Como voce ira montar o grafo?" << endl;
     cout << endl << "[1] Manualmente" << endl << "[2] Leitura de arquivo" << endl;
     cin >> escolha;
+    escolha=1;
     if(escolha==1){
-        int ponderadoAresta;
+        bool ponderadoAresta;/*
         cout << "O grafo sera ponderado nas arestas?" << endl;
-        cout << "[1] Sim" << endl << "[2] Nao" << endl;
+        cout << "[0] Nao" << endl << "[1] Sim" << endl;
         cin >> ponderadoAresta;
+        ponderadoAresta=false;
         while(true){
             Menu();
             cin >> escolha;
@@ -58,10 +59,16 @@ int main()
             }
             else if(escolha==2){
                 string nome1, nome2;
+                float peso;
                 cout << "Digite os nomes dos vertices da aresta:" << endl;
                 cin >> nome1;
                 cin >> nome2;
-                G.adicionaAresta(nome1, nome2, ponderadoAresta);
+                if(ponderadoAresta){
+                    cin >> peso;
+                    G.adicionaAresta(nome1, nome2, peso, direcionado);
+                }
+                else
+                    G.adicionaAresta(nome1, nome2, direcionado);
             }
             else if(escolha==3){
                 G.listaAdjacencia();
@@ -70,20 +77,20 @@ int main()
                 string nome;
                 cout << "Digite o nome do verice que deseja remover: ";
                 cin >> nome;
-                G.removeVertice(nome);
+                G.removeVertice(nome, direcionado);
             }
             else if(escolha==5){
                 string nome1, nome2;
                 cout << "Digite o nome dos verices da aresta: ";
                 cin >> nome1;
                 cin >> nome2;
-                G.removeAresta(nome1, nome2);
+                G.removeAresta(nome1, nome2, direcionado);
             }
             else if(escolha==6){
                 string nome;
                 cout << "Digite o nome do vertice que deseja saber o grau: ";
                 cin >> nome;
-                int grau = G.grauVertice(nome);
+                int grau = G.grauVertice(nome, direcionado);
                 cout << "Grau do vertice " << nome << ": " <<grau << endl;
             }
             else if(escolha==7){
@@ -123,7 +130,7 @@ int main()
                     cout << "O grafo nao e bipartido" << endl;
             }
             else if(escolha == 13){
-                G.sequenciaGraus();
+                G.sequenciaGraus(direcionado);
             }
             else if(escolha==14){
                 G.arvoreGeradoraMinimaKruskal();
@@ -137,66 +144,29 @@ int main()
     }
 */
 
-/*
+    direcionado = true;
     G.adicionaVertice("A");
     G.adicionaVertice("B");
     G.adicionaVertice("C");
     G.adicionaVertice("D");
     G.adicionaVertice("E");
-    G.adicionaVertice("F");
-    G.adicionaVertice("G");
-    G.adicionaVertice("H");
-    G.adicionaVertice("I");
-*/
-    G.adicionaVertice("A");
-    G.adicionaVertice("B");
-    G.adicionaVertice("C");
-    G.adicionaVertice("D");
-    G.adicionaVertice("E");
-    G.adicionaVertice("F");
-    G.adicionaVertice("G");
 
-/*
-    G.adicionaAresta("A", "B");
-    G.adicionaAresta("A", "C");
-    G.adicionaAresta("B", "D");
-    G.adicionaAresta("B", "E");
-    G.adicionaAresta("C", "F");
-  */
-    G.adicionaAresta("A", "B", 1, direcionado);
-    G.adicionaAresta("B", "E", 1, direcionado);
-    G.adicionaAresta("E", "D", 1, direcionado);
-    G.adicionaAresta("G", "D", 1, direcionado);
-    G.adicionaAresta("G", "E", 1, direcionado);
-    G.adicionaAresta("G", "F", 1, direcionado);
-    G.adicionaAresta("C", "F", 1, direcionado);
-    G.adicionaAresta("F", "C", 1, direcionado);
-    G.adicionaAresta("B", "C", 1, direcionado);
-    G.adicionaAresta("D", "A", 1, direcionado);
-  /*
-    G.adicionaAresta("A", "B", 0);
-    G.adicionaAresta("A", "H", 0);
-    G.adicionaAresta("B", "H", 0);
-    G.adicionaAresta("B", "C", 0);
-    G.adicionaAresta("C", "D", 0);
-    G.adicionaAresta("C", "I", 0);
-    G.adicionaAresta("H", "I", 0);
-    G.adicionaAresta("G", "H", 0);
-    G.adicionaAresta("G", "I", 0);
-    G.adicionaAresta("D", "E", 0);
-    G.adicionaAresta("F", "E", 0);
-    G.adicionaAresta("C", "F", 0);
-    G.adicionaAresta("G", "F", 0);
-    G.adicionaAresta("D", "F", 0);
-*/
+
+    G.adicionaAresta("B", "A", direcionado);
+    G.adicionaAresta("A", "C", direcionado);
+    G.adicionaAresta("A", "E", direcionado);
+    G.adicionaAresta("D", "C", direcionado);
+    G.adicionaAresta("B", "C", direcionado);
+    G.adicionaAresta("E", "D", direcionado);
+    G.adicionaAresta("C", "B", direcionado);
+
 
     G.listaAdjacencia();
-    cout << endl;
-    //G.arvoreGeradoraMinimaPrim();
-    //G.caminhoMinimoDijkstra("A", "B");
-    //G.caminhoMinimoFloyd();
-    //G.fechoTransitivoDireto("G", 1);
-    G.fechoTransitivoIndireto("G", direcionado);
+
+    G.grauVertice("A", direcionado);
+    //cout << G.K_Regularidade(2) << endl;
+
+
 
     return 0;
 }

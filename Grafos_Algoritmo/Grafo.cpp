@@ -61,8 +61,8 @@ void Grafo::adicionaVertice(string nome)
                 aux = aux->getProx();
             aux->setProx(novo);
         }
+        aumentaOrdem();
     }
-    aumentaOrdem();
 }
 
 void Grafo::adicionaAresta(string nome1, string nome2, bool direcionado)
@@ -92,7 +92,6 @@ void Grafo::adicionaAresta(string nome1, string nome2, bool direcionado)
             aux = aux->getProx();
         aux->setProx(nova1);
     }
-    no1->aumentaGrau();
 
     if(!direcionado){
         Aresta *nova2 = new Aresta();
@@ -110,10 +109,17 @@ void Grafo::adicionaAresta(string nome1, string nome2, bool direcionado)
                 aux = aux->getProx();
             aux->setProx(nova2);
         }
-        no2->aumentaGrau();
     }
-
-    no2->aumentaGrau();
+    if(direcionado){
+        no1->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
+    else{
+        no1->aumentaGrauSaida();
+        no1->aumentaGrauEntrada();
+        no2->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
 }
 
 void Grafo::adicionaAresta(string nome1, string nome2, float peso, bool direcionado)
@@ -144,7 +150,6 @@ void Grafo::adicionaAresta(string nome1, string nome2, float peso, bool direcion
             aux = aux->getProx();
         aux->setProx(nova1);
     }
-    no1->aumentaGrau();
 
     if(!direcionado){
         Aresta *nova2 = new Aresta();
@@ -163,23 +168,31 @@ void Grafo::adicionaAresta(string nome1, string nome2, float peso, bool direcion
                 aux = aux->getProx();
             aux->setProx(nova2);
         }
-        no2->aumentaGrau();
     }
 
-    no2->aumentaGrau();
+    if(direcionado){
+        no1->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
+    else{
+        no1->aumentaGrauSaida();
+        no1->aumentaGrauEntrada();
+        no2->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
 }
 
 
-void Grafo::removeAresta(string nome1, string nome2)
+void Grafo::removeAresta(string nome1, string nome2, bool direcionado)
 {
     if(existeVertice(nome1) && existeVertice(nome2)){
-        Vertice *aux = getVertice(nome1);
+        Vertice *auxVertice1 = getVertice(nome1);
         Aresta *atual;
         Aresta *anterior;
-        atual = aux->getArestaAdj();
+        atual = auxVertice1->getArestaAdj();
         if(atual!=NULL){
             anterior = NULL;
-            while(atual->getVerticeAdj()!=nome2 && atual!=NULL){
+            while(atual!=NULL && atual->getVerticeAdj()!=nome2){
                 anterior = atual;
                 atual = atual->getProx();
             }
@@ -188,9 +201,8 @@ void Grafo::removeAresta(string nome1, string nome2)
                     anterior->setProx(atual->getProx());
                 }
                 else{
-                    aux->setArestaAdj(atual->getProx());
+                    auxVertice1->setArestaAdj(atual->getProx());
                 }
-                aux = atual->getEnderecoVerticeAdj();
                 delete atual;
             }
             else{
@@ -200,11 +212,11 @@ void Grafo::removeAresta(string nome1, string nome2)
         else{
             //erro vertice nao tem aresta
         }
-        aux = getVertice(nome2);
-        atual = aux->getArestaAdj();
+        Vertice *auxVertice2 = getVertice(nome2);
+        atual = auxVertice2->getArestaAdj();
         if(atual!=NULL){
             anterior = NULL;
-            while(atual->getVerticeAdj()!=nome1 && atual!=NULL){
+            while(atual!=NULL && atual->getVerticeAdj()!=nome1){
                 anterior = atual;
                 atual = atual->getProx();
             }
@@ -213,7 +225,7 @@ void Grafo::removeAresta(string nome1, string nome2)
                     anterior->setProx(atual->getProx());
                 }
                 else
-                    aux->setArestaAdj(atual->getProx());
+                    auxVertice2->setArestaAdj(atual->getProx());
                 delete atual;
             }
             else{
@@ -223,17 +235,23 @@ void Grafo::removeAresta(string nome1, string nome2)
         else{
             //erro vertice nao tem aresta
         }
-        aux = getVertice(nome1);
-        aux->diminuiGrau();
-        aux = getVertice(nome2);
-        aux->diminuiGrau();
+        if(direcionado){
+            auxVertice1->diminuiGrauSaida();
+            auxVertice2->diminuiGrauEntrada();
+        }
+        else{
+            auxVertice1->diminuiGrauSaida();
+            auxVertice2->diminuiGrauEntrada();
+            auxVertice1->diminuiGrauEntrada();
+            auxVertice2->diminuiGrauSaida();
+        }
     }
     else{
         //pelo menos algum vertice não existe
     }
 }
 
-void Grafo::removeVertice(string nome)
+void Grafo::removeVertice(string nome, bool direcionado)
 {
     if(existeVertice(nome)){
         Vertice *auxVertice = primeiro;
@@ -241,7 +259,7 @@ void Grafo::removeVertice(string nome)
             Aresta *auxAresta = auxVertice->getArestaAdj();
             while(auxAresta!=NULL){
                 if(auxAresta->getVerticeAdj()==nome){
-                    removeAresta(auxVertice->getNome(), nome);
+                    removeAresta(auxVertice->getNome(), nome, direcionado);
                     break;
                 }
                 auxAresta = auxAresta->getProx();
@@ -259,11 +277,11 @@ void Grafo::removeVertice(string nome)
         else
             anterior->setProx(auxVertice->getProx());
         delete auxVertice;
+        diminuiOrdem();
     }
     else{
         //vertice não existe
     }
-    diminuiOrdem();
 }
 
 
@@ -283,42 +301,67 @@ void Grafo::listaAdjacencia()
 }
 
 
-int Grafo::grauVertice(string nome)
+bool Grafo::grauVertice(string nome, bool direcionado)
 {
     if(existeVertice(nome)){
-        Vertice *aux = getVertice(nome);
-        return aux->getGrau();
+        Vertice *auxVertice = getVertice(nome);
+        if(direcionado){
+            cout << "Grau de entrada: [" << auxVertice->getGrauEntrada() << "]" << endl;
+            cout << "Grau de saida: [" << auxVertice->getGrauSaida() << "]" << endl;
+        }
+        else{
+            cout << "Grau do vertice " << nome << ": " << auxVertice->getGrauEntrada() << endl;
+        }
     }
     else{
         //erro vertice nao existe
-        return -1;
+
     }
 }
 
 
 bool Grafo::K_Regularidade(int k)
 {
-    Vertice *aux = primeiro;
+    if(!grafoVazio()){
+        if(primeiro==NULL){
+            return false;
+        }
+        Vertice *auxVertice = primeiro;
+        while(auxVertice!=NULL){
+            if(auxVertice->getGrauEntrada() != k)
+                return false;
+            auxVertice = auxVertice->getProx();
+        }
+        return true;
+    }
+    else{
+        cout << "Grafo vazio" << endl;
+        return false;
+    }
+    /*Vertice *aux = primeiro;
     if(primeiro==NULL)
         return false;
     while(aux!=NULL){
-        if(aux->getGrau()!=k)
+        if(aux->getGrauSaida()!=k)
             return false;
         aux = aux->getProx();
     }
     return true;
-
+*/
 }
 
 void Grafo::aumentaOrdem(){
     ordemGrafo++;
 }
+
 void Grafo::diminuiOrdem(){
     ordemGrafo--;
 }
+
 int Grafo::getOrdemDoGrafo(){
     return ordemGrafo;
 }
+
 
 
 void Grafo::vizinhancaAberta(string nome)
@@ -358,13 +401,30 @@ void Grafo::vizinhancaFechada(string nome)
 
 bool Grafo::grafoCompleto()
 {
+    if(!grafoVazio()){
+        Vertice *auxVertice = primeiro;
+        while(auxVertice!=NULL){
+            if(auxVertice->getGrauSaida()!=ordemGrafo-1){
+                return false;
+            }
+            auxVertice = auxVertice->getProx();
+        }
+        return true;
+    }
+    return false;
+
+
+
+
+
+    /*
     Vertice *aux = primeiro;
     while(aux!=NULL){
         if(aux->getGrau() != ordemGrafo-1)
             return false;
         aux = aux->getProx();
     }
-    return true;
+    return true;*/
 }
 
 
@@ -485,9 +545,82 @@ bool Grafo::grafoVazio()
     return (primeiro==NULL);
 }
 
-void Grafo::sequenciaGraus()
+void Grafo::sequenciaGraus(bool direcionado)
 {
     if(!grafoVazio()){
+        Vertice *auxVertice = primeiro;
+        if(direcionado){
+            int *grausEntrada = new int[ordemGrafo];
+            int *grausSaida = new int[ordemGrafo];
+            int i=0;
+            while(auxVertice!=NULL){
+                grausEntrada[i] = auxVertice->getGrauEntrada();
+                grausSaida[i] = auxVertice->getGrauSaida();
+                i++;
+                auxVertice = auxVertice->getProx();
+            }
+            for(i=0; i<ordemGrafo; i++){
+                for(int j=0; j<ordemGrafo; j++){
+                    if(grausEntrada[i] > grausEntrada[j]){
+                        int aux = grausEntrada[i];
+                        grausEntrada[i] = grausEntrada[j];
+                        grausEntrada[j] = aux;
+                        aux = grausSaida[i];
+                        grausSaida[i] = grausSaida[j];
+                        grausSaida[j] = aux;
+                    }
+                    else if(grausEntrada[i]==grausEntrada[j]){
+                        if(grausSaida[i] > grausSaida[j]){
+                            int aux = grausEntrada[i];
+                            grausEntrada[i] = grausEntrada[j];
+                            grausEntrada[j] = aux;
+                            aux = grausSaida[i];
+                            grausSaida[i] = grausSaida[j];
+                            grausSaida[j] = aux;
+                        }
+                    }
+                }
+
+            }
+            cout << "< ";
+            for(int i=0; i<ordemGrafo; i++){
+                cout << "(" << grausEntrada[i] << ", " << grausSaida[i] << ")";
+                if(i<ordemGrafo-1)
+                    cout << ", ";
+            }
+            cout << " >" << endl;
+        }
+        else{
+            int *graus = new int[ordemGrafo];
+            int i=0;
+            while(auxVertice!=NULL){
+                graus[i] = auxVertice->getGrauSaida();
+                i++;
+                auxVertice = auxVertice->getProx();
+            }
+            for(i =0; i<ordemGrafo; i++){
+                for(int j=0; j<ordemGrafo; j++){
+                    if(graus[i]>graus[j]){
+                        int aux = graus[i];
+                        graus[i] = graus[j];
+                        graus[j] = aux;
+                    }
+                }
+            }
+            cout << "< ";
+            for(int i=0; i<ordemGrafo; i++){
+                cout << graus[i];
+                if(i<ordemGrafo-1)
+                    cout << ", ";
+            }
+            cout << " >" << endl;
+        }
+    }
+
+
+
+
+    /*if(!grafoVazio()){
         Vertice *auxVertice = primeiro;
         int *vet = new int[ordemGrafo];
         int i=0;
@@ -496,7 +629,7 @@ void Grafo::sequenciaGraus()
             auxVertice = auxVertice->getProx();
             i++;
         }
-        for(int i=0; i<ordemGrafo; i++){
+        for(i=0; i<ordemGrafo; i++){
             for(int j=0; j<ordemGrafo; j++){
                 if(vet[i]>vet[j]){
                     int aux = vet[i];
@@ -514,7 +647,7 @@ void Grafo::sequenciaGraus()
     }
     else{
         //grafo vazio
-    }
+    }*/
 }
 
 
