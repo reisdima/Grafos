@@ -1,8 +1,28 @@
 #include <iostream>
 #include <string>
 #include "Grafo.h"
+#include <fstream>
+
+
+
 
 using namespace std;
+
+void leituraDeArquivo(string nomeArquivo, Grafo *G, bool direcionado)
+{
+    //ifstream file("grafo_1000_1.txt");
+    ifstream file("grafo_125.txt");
+    int n;
+    string nome1, nome2;
+    float peso;
+    if(file.is_open()){
+        file >> n;
+        while(file >> nome1 >> nome2 >> peso){
+            G->adicionaAresta(nome1, nome2, peso, direcionado);
+            //cout << "a";
+        }
+    }
+}
 
 void Menu()
 {
@@ -20,6 +40,14 @@ void Menu()
     cout << "[12] Verificar se o grafo e bipartido" << endl;
     cout << "[13] Imprimir sequencia de graus" << endl;
     cout << "[14] Arvore geradore minima por Kruskal" << endl;
+    cout << "[15] Arvore geradore minima por Prim" << endl;
+    cout << "[16] Caminho minimo por Dijkstra" << endl;
+    cout << "[17] Caminho minimo por Floyd" << endl;
+    cout << "[18] Fecho transitivo direto" << endl;
+    cout << "[19] Fecho transitivo indireto" << endl;
+    cout << "[20] Conjunto maximo independente guloso" << endl;
+    cout << "[21] Conjunto maximo independente guloso randomizado" << endl;
+    cout << "[22] Verifica se o grafo forma ciclo" << endl;
     cout << "[0]  Sair" << endl;
 }
 
@@ -27,27 +55,45 @@ void Menu()
 int main()
 {
     Grafo G;
-    bool direcionado;
-
+    bool direcionado = false;
+    //string nomeArquivo = "grafo_1000_1.txt";
+    string nomeArquivo = "grafo_125.txt";
+    leituraDeArquivo(nomeArquivo, &G, direcionado);
+    ofstream fileWrite;
+    fileWrite.open("test.txt");
+    fileWrite << "Teste";
+    fileWrite.close();
 
 /*
     cout << "O grafo sera direcionado?" << endl << endl;
     cout << "[0] Nao" << endl << "[1] Sim" << endl;
     cin >> direcionado;
+*/
 
-    direcionado = false;
 
-    int escolha;
-    /*cout << endl << "Como voce ira montar o grafo?" << endl;
+    int escolha;/*
+    cout << endl << "Como voce ira montar o grafo?" << endl;
     cout << endl << "[1] Manualmente" << endl << "[2] Leitura de arquivo" << endl;
-    cin >> escolha;
+    cin >> escolha;*/
     escolha=1;
     if(escolha==1){
-        bool ponderadoAresta;/*
-        cout << "O grafo sera ponderado nas arestas?" << endl;
+        bool ponderadoAresta;
+       /* cout << "O grafo sera ponderado nas arestas?" << endl;
         cout << "[0] Nao" << endl << "[1] Sim" << endl;
-        cin >> ponderadoAresta;
-        ponderadoAresta=false;
+        cin >> ponderadoAresta;*/
+        ponderadoAresta=true;
+/*
+        G.adicionaAresta("A", "B", 7, direcionado);
+        G.adicionaAresta("A", "D", 5, direcionado);
+        G.adicionaAresta("D", "B", 9, direcionado);
+        G.adicionaAresta("D", "E", 15, direcionado);
+        G.adicionaAresta("D", "F", 6, direcionado);
+        G.adicionaAresta("F", "G", 11, direcionado);
+        G.adicionaAresta("F", "E", 8, direcionado);
+        G.adicionaAresta("B", "C", 8, direcionado);
+        G.adicionaAresta("C", "E", 5, direcionado);
+        G.adicionaAresta("E", "G", 9, direcionado);
+        G.adicionaAresta("B", "E", 7, direcionado);*/
         while(true){
             Menu();
             cin >> escolha;
@@ -90,8 +136,7 @@ int main()
                 string nome;
                 cout << "Digite o nome do vertice que deseja saber o grau: ";
                 cin >> nome;
-                int grau = G.grauVertice(nome, direcionado);
-                cout << "Grau do vertice " << nome << ": " <<grau << endl;
+                G.grauVertice(nome, direcionado);
             }
             else if(escolha==7){
                 int k;
@@ -135,6 +180,45 @@ int main()
             else if(escolha==14){
                 G.arvoreGeradoraMinimaKruskal();
             }
+            else if(escolha==15){
+                G.arvoreGeradoraMinimaPrim();
+            }
+            else if(escolha==16){
+                cout << "Digite o vertice que deseja saber o caminho minimo: ";
+                string nome;
+                cin >> nome;
+                G.caminhoMinimoDijkstra(nome);
+            }
+            else if(escolha==17){
+                cout << "Digite o vertice que deseja saber o caminho minimo: ";
+                string nome;
+                cin >> nome;
+                G.caminhoMinimoFloyd(nome);
+            }
+            else if(escolha==18){
+                cout << "Digite o vertice que deseja saber o fecho transitivo: ";
+                string nome;
+                cin >> nome;
+                G.fechoTransitivoDireto(nome, direcionado);
+            }
+            else if(escolha==19){
+                cout << "Digite o vertice que deseja saber o fecho transitivo: ";
+                string nome;
+                cin >> nome;
+                G.fechoTransitivoIndireto(nome, direcionado);
+            }
+            else if(escolha==20){
+                G.conjuntoMaximoIndependenteGuloso();
+            }
+            else if(escolha==21){
+                G.conjuntoMaximoIndependenteGulosoRandomizado(500, 0.5);
+            }
+            else if(escolha==22){
+                if(G.existeCiclo())
+                    cout << "O grafo tem ciclo" << endl;
+                else
+                    cout << "O grafo nao tem ciclo" << endl;
+            }
             else if(escolha==0)
                 break;
         }
@@ -142,28 +226,20 @@ int main()
     else{
 
     }
-*/
 
-    direcionado = true;
-    G.adicionaVertice("A");
-    G.adicionaVertice("B");
-    G.adicionaVertice("C");
-    G.adicionaVertice("D");
-    G.adicionaVertice("E");
-
-
-    G.adicionaAresta("B", "A", direcionado);
-    G.adicionaAresta("A", "C", direcionado);
-    G.adicionaAresta("A", "E", direcionado);
-    G.adicionaAresta("D", "C", direcionado);
-    G.adicionaAresta("B", "C", direcionado);
-    G.adicionaAresta("E", "D", direcionado);
-    G.adicionaAresta("C", "B", direcionado);
+    G.adicionaAresta("A", "B", 7, true);
+    G.adicionaAresta("A", "D", 5, true);
+    G.adicionaAresta("D", "B", 97, true);
+    G.adicionaAresta("D", "E", 15, true);
+    G.adicionaAresta("D", "F", 6, true);
+    G.adicionaAresta("F", "G", 11, true);
+    G.adicionaAresta("F", "E", 8, true);
+    G.adicionaAresta("B", "C", 8, true);
+    G.adicionaAresta("C", "E", 5, true);
+    G.adicionaAresta("E", "G", 9, true);
 
 
-    G.listaAdjacencia();
-
-    G.grauVertice("A", direcionado);
+    //G.grauVertice("A", direcionado);
     //cout << G.K_Regularidade(2) << endl;
 
 

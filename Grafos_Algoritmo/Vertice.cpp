@@ -6,6 +6,7 @@ Vertice::Vertice() //contrutor, define a aresta adjascente como full e define se
     prox = NULL;
     grauEntrada = 0;
     grauSaida = 0;
+    grau = 0;
 }
 
 Vertice::~Vertice()

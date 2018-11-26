@@ -29,6 +29,7 @@ public:
 
 private:
     string nome;                        //nome do vertice
+    int grau;
     int grauEntrada;                    //grau de entrada do vertice
     int grauSaida;                      //grau de saida do vertice
     Vertice *prox;                      //proximo vertice

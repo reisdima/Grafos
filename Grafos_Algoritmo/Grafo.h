@@ -2,6 +2,7 @@
 #define GRAFO_H
 #include "Vertice.h"
 #include "Aresta.h"
+#include <fstream>
 #include <stack>
 #include <list>
 
@@ -19,7 +20,7 @@ public:
     void removeVertice(string nome, bool direcionado);
     void removeAresta(string nome1, string nome2, bool direcionado);
     void listaAdjacencia();
-    bool grauVertice(string nome, bool direcionado);
+    void grauVertice(string nome, bool direcionado);
     bool K_Regularidade(int k);
     int getOrdemDoGrafo();
     void vizinhancaAberta(string nome);
@@ -30,12 +31,18 @@ public:
     void arvoreGeradoraMinimaKruskal();
     bool existeCiclo();
     void arvoreGeradoraMinimaPrim();
-    void caminhoMinimoDijkstra(string vertice1, string vertice2);
-    void caminhoMinimoFloyd();
+    void caminhoMinimoDijkstra(string vertice1);
+    void caminhoMinimoFloyd(string vertice);
     void fechoTransitivoDireto(string nome, bool direcionado);
-    void fechoTransitivoIndireto(string nomes, bool direcionado);
+    void fechoTransitivoIndireto(string nome, bool direcionado);
+    void apagarGrafo();
+
+    void conjuntoMaximoIndependenteGuloso();
+    void conjuntoMaximoIndependenteGulosoRandomizado(int intMax, float alpha);
+    void conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax);
 
 private:
+    list<string> *nomes;
     Vertice *primeiro;
     bool existeVertice(string nome);
     Vertice *getVertice(string nome);
@@ -43,12 +50,22 @@ private:
     void aumentaOrdem();
     void diminuiOrdem();
     bool grafoVazio();
+    int getIndex(list<string> *nomes, string nome);
     int getIndex(string *nomes, string nome);
     bool auxGrafoBipartido(Vertice *auxVertice, stack<string>pilha, int *vizitado, int *coloracao, string *nomes, int cor);
     bool contemAresta(string origem, string destino, list<Aresta> *arestas);
-    list<Aresta> *ordernarArestasPorPeso(list<Aresta> *arestas);
+    list<Aresta> *ordernarArestasPorPesoDecrescente(list<Aresta> *arestas);
     bool formaCiclo(list<Aresta> *solucao, Aresta *aresta);
+    bool formaCiclo(bool *solucao, Aresta *aresta, int tamanho, int index1, int index2);
     int distanciaMinima(int dist[], bool sptSet[]);
+    list<Vertice> *ordenaGrauDecrescente(list<Vertice> *vertices);
+    bool verticesVizinhos(list<Vertice> *solucao, Vertice *v);
+    list<Vertice> *possiveisAdicionarIndependente(list<Vertice> *conjuntoSolucao);
+    Aresta *getMelhorAresta(list<string> *verticesNaSolucao, bool *visitados, list<Aresta> *solucao);
+    int Find(int *parent, int n, int tamanho);
+    void Union(int *parent, int x, int y);
+    int minKey(float *key, bool *verticesNaArvore);
+    void imprimirSolucao(list<Vertice> *solucao, ofstream *file);
 };
 
 #endif // GRAFO_H

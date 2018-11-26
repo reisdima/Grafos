@@ -4,21 +4,61 @@
 #include <stdlib.h>
 #include <list>
 #include <queue>
+#include <string>
 #include <time.h>
+#include <math.h>
+#include <fstream>
 #define INF 99999
 
 Grafo::Grafo()
 {
     primeiro = NULL;
     ordemGrafo = 0;
+    nomes = new list<string>;
 
 }
 
 Grafo::~Grafo()
 {
-    //dtor
+    Vertice *auxVertice = this->primeiro;
+    Vertice *auxVertice2 = NULL;
+    while(auxVertice!=NULL){
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        Aresta *auxAresta2 = NULL;
+        while(auxAresta!=NULL){
+            auxAresta2 = auxAresta->getProx();
+            delete auxAresta;
+            auxAresta = auxAresta2;
+        }
+        auxVertice->setArestaAdj(NULL);
+        auxVertice2 = auxVertice->getProx();
+        delete auxVertice;
+        auxVertice = auxVertice2;
+    }
+    this->primeiro = NULL;
 }
 
+void Grafo::apagarGrafo()
+{
+    //cout << "Apagando grafo" << endl;
+    Vertice *auxVertice = primeiro;
+    Vertice *auxVertice2 = NULL;
+    while(auxVertice!=NULL){
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        Aresta *auxAresta2 = NULL;
+        while(auxAresta!=NULL){
+            auxAresta2 = auxAresta->getProx();
+            delete auxAresta;
+            auxAresta = auxAresta2;
+        }
+        auxVertice->setArestaAdj(NULL);
+        auxVertice2 = auxVertice->getProx();
+        delete auxVertice;
+        auxVertice = auxVertice2;
+    }
+    //cout << "teste" << primeiro->getNome() << endl;
+    primeiro = NULL;
+}
 
 bool Grafo::existeVertice(string nome)
 {
@@ -62,6 +102,7 @@ void Grafo::adicionaVertice(string nome)
             aux->setProx(novo);
         }
         aumentaOrdem();
+        nomes->push_back(nome);
     }
 }
 
@@ -278,6 +319,7 @@ void Grafo::removeVertice(string nome, bool direcionado)
             anterior->setProx(auxVertice->getProx());
         delete auxVertice;
         diminuiOrdem();
+        nomes->remove(nome);
     }
     else{
         //vertice não existe
@@ -301,7 +343,7 @@ void Grafo::listaAdjacencia()
 }
 
 
-bool Grafo::grauVertice(string nome, bool direcionado)
+void Grafo::grauVertice(string nome, bool direcionado)
 {
     if(existeVertice(nome)){
         Vertice *auxVertice = getVertice(nome);
@@ -537,6 +579,17 @@ int Grafo::getIndex(string *nomes, string nome)
         if(nomes[i] == nome)
             return i;
     }
+}
+
+int Grafo::getIndex(list<string> *nomes, string nome)
+{
+    list<string>::iterator it;
+    int i=0;
+    for(it=nomes->begin(); it!=nomes->end(); it++){
+        if(*it==nome)
+            return i;
+        i++;
+    }
 
 }
 
@@ -654,10 +707,77 @@ void Grafo::sequenciaGraus(bool direcionado)
 
 void Grafo::arvoreGeradoraMinimaKruskal()
 {
+
     if(!grafoVazio()){
+        Vertice *auxVertice = primeiro;
+        list<Aresta> *arestas = new list<Aresta>;
+        while(auxVertice!=NULL){
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                arestas->push_back(*auxAresta);
+                auxAresta = auxAresta->getProx();
+            }
+            auxVertice = auxVertice->getProx();
+        }
+
+        arestas = ordernarArestasPorPesoDecrescente(arestas);
+        int *parent = new int[ordemGrafo];
+        auxVertice = primeiro;
+        for(int i=0; i<ordemGrafo; i++){
+            parent[i] = -1;
+            auxVertice = auxVertice->getProx();
+        }
+        list<Aresta>::iterator it;
+
+        list<Aresta> solucao;
+
+        int e = 0;
+
+
+        while(e<ordemGrafo-1){
+
+            it = arestas->begin();
+            //cout << "Verificando aresta " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+            int index1 = getIndex(nomes, it->getNomeOrigem());
+            int index2 = getIndex(nomes, it->getVerticeAdj());
+            //cout << "Indexes: " << index1 << "  " << index2 << endl;
+            int x = Find(parent, index1, 0);
+            int y = Find(parent, index2, 0);
+            //cout << "X: " << x << "  Y: " << y << endl;
+            if(x!=y){
+                //cout << "Adicionando aresta " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+                solucao.push_back(*it);
+                Union(parent, x, y);
+                e++;
+            }
+            //cout << endl;
+            arestas->pop_front();
+        }
+        float peso = 0;
+        for(it=solucao.begin(); it!=solucao.end(); it++){
+            cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << "  (" << it->getPeso() << ")"  << endl;
+            peso += it->getPeso();
+        }
+        cout << endl << "Soma dos pesos: " << peso << endl;
+
+
+    }
+
+
+
+
+
+if(false){
+/*
+    if(!grafoVazio()){
+        int contador = 0;
+        bool *visitados = new bool[ordemGrafo];
         list<Aresta> *arestas = new list<Aresta>;
         Vertice *auxVertice = primeiro;
+        int i=0;
         while(auxVertice!=NULL){
+            visitados[i] = false;
+            i++;
             Aresta *auxAresta = auxVertice->getArestaAdj();
             while(auxAresta!=NULL){
                 if(!contemAresta(auxAresta->getNomeOrigem(), auxAresta->getVerticeAdj(), arestas)){
@@ -667,39 +787,51 @@ void Grafo::arvoreGeradoraMinimaKruskal()
             }
             auxVertice = auxVertice->getProx();
         }
-        arestas = ordernarArestasPorPeso(arestas);
+        arestas = ordernarArestasPorPesoDecrescente(arestas);
         list<Aresta>::iterator it;
-        for(it=arestas->begin(); it!=arestas->end(); it++){
-            cout << it->getPeso() << " ";
-        }
-        cout << endl << endl;
+        int index1;
+        int index2;
         list<Aresta> *solucao = new list<Aresta>;
         it = arestas->begin();
         while(it!=arestas->end()){
             Aresta auxAresta = *it;
-            cout << "Aresta sendo observada: " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+            index1 = getIndex(nomes, auxAresta.getVerticeAdj());
+            index2 = getIndex(nomes, auxAresta.getNomeOrigem());
             if(!formaCiclo(solucao, &auxAresta)){
+                contador++;
+                visitados[index1] = true;
+                visitados[index2] = true;
                 solucao->push_back(auxAresta);
             }
             it++;
         }
+        float soma = 0;
         for(it = solucao->begin(); it!=solucao->end(); it++){
             cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << "  (" << it->getPeso() << ")" << endl;
+            soma += it->getPeso();
         }
-    }
+        cout << endl << contador;
+        cout << "\n\n";
+        cout << "Somatorio dos pesos: " << soma << endl;
+
+    }*/
+}
+
 }
 
 bool Grafo::contemAresta(string origem, string destino, list<Aresta> *arestas)
 {
     list<Aresta>::iterator it;
+
     for(it = arestas->begin(); it!=arestas->end(); it++){
         if((it->getNomeOrigem()==origem && it->getVerticeAdj()==destino) || (it->getNomeOrigem()==destino && it->getVerticeAdj()==origem))
             return true;
+
     }
     return false;
 }
 
-list<Aresta> *Grafo::ordernarArestasPorPeso(list<Aresta> *arestas)
+list<Aresta> *Grafo::ordernarArestasPorPesoDecrescente(list<Aresta> *arestas)
 {
 
     list<Aresta>::iterator it1;
@@ -723,6 +855,167 @@ bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
 {
     if(solucao->empty())
         return false;
+    Grafo *G1 = new Grafo();
+    list<Aresta>::iterator it1;
+    for(it1 = solucao->begin(); it1!=solucao->end(); it1++){
+        //cout << "Adicionando aresta: " << it1->getNomeOrigem() << " -> " << it1->getVerticeAdj() << endl;
+        G1->adicionaAresta(it1->getNomeOrigem(), it1->getVerticeAdj(), 0);
+    }
+    //cout << "Adicionando aresta: " << aresta->getNomeOrigem() << " -> " << aresta->getVerticeAdj() << endl;
+    G1->adicionaAresta(aresta->getNomeOrigem(), aresta->getVerticeAdj(), 0);
+    //G1->listaAdjacencia();
+    //cout << endl;
+    queue<string> fila;
+
+    bool *visitado = new bool [G1->ordemGrafo];
+    string *parent = new string[G1->ordemGrafo];
+    Vertice *auxVertice = G1->primeiro;
+    for(int i=0; i<G1->ordemGrafo; i++){
+        parent[i] = "-1";
+        visitado[i] = false;
+    }
+
+    fila.push(auxVertice->getNome());
+    int index = G1->getIndex(G1->nomes, auxVertice->getNome());
+    visitado[index] = true;
+    while(!fila.empty()){
+        auxVertice = G1->getVertice(fila.front());
+        fila.pop();
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        while(auxAresta!=NULL){
+            index = G1->getIndex(G1->nomes, auxAresta->getVerticeAdj());
+            if(!visitado[index]){
+                visitado[index] = true;
+                fila.push(auxAresta->getVerticeAdj());
+                parent[index] = auxVertice->getNome();
+            }
+            else{
+                index = G1->getIndex(G1->nomes, auxVertice->getNome());
+                if(parent[index] != auxAresta->getVerticeAdj())
+                    return true;
+            }
+            auxAresta = auxAresta->getProx();
+        }
+    }
+    G1->apagarGrafo();
+    //cout << "teste" << endl;
+    return false;
+
+
+
+
+
+
+    if(false){
+            /*
+    if(solucao->empty())
+        return false;
+    //cout << endl;
+
+    Grafo *G1 = new Grafo;
+    list<Aresta>::iterator it;
+    for(it=solucao->begin(); it!=solucao->end(); it++){
+        //cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+        G1->adicionaAresta(it->getNomeOrigem(), it->getVerticeAdj(), 0);
+    }
+    G1->adicionaAresta(aresta->getNomeOrigem(), aresta->getVerticeAdj(), 0);
+
+    int tamanho = G1->ordemGrafo;
+    int *parent = new int[tamanho];
+    for(int i=0; i<tamanho; i++)
+        parent[i] = -1;
+    it = solucao->begin();
+    Aresta *auxAresta;
+    Vertice *auxVertice = G1->primeiro;
+    G1->listaAdjacencia();
+
+    while(auxVertice!=NULL){
+        cout << "Vertice atual:  " << auxVertice->getNome() << endl;
+        auxAresta = auxVertice->getArestaAdj();
+        while(auxAresta!=NULL){
+            cout << "Verificando se tem ciclo: " << endl;
+            cout << auxAresta->getNomeOrigem() << " -> " << auxAresta->getVerticeAdj() << endl;
+            //cout << getIndex(G1->nomes, auxAresta->getNomeOrigem()) << endl;
+            //cout << getIndex(G1->nomes, auxAresta->getVerticeAdj()) << endl;
+            int x = Find(parent, getIndex(G1->nomes, auxAresta->getNomeOrigem()), tamanho);
+            int y = Find(parent, getIndex(G1->nomes, auxAresta->getVerticeAdj()), tamanho);
+            cout << x << "  " << y << endl << endl;
+            if(x==y){
+                cout << "TEEESSSTEE" << endl;
+                cout << x << "  " << y << endl;
+                return true;
+            }
+            else
+                Union(parent, x, y);
+            auxAresta = auxAresta->getProx();
+        }
+        auxVertice = auxVertice->getProx();
+    }
+
+    return false;
+
+
+
+/*    while(auxVertice!=NULL){
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        while(auxAresta!=NULL){
+            int x = Find(parent, ->getIndex(G1->nomes, auxAresta->getNomeOrigem()));
+            int y = Find(parent, ->getIndex(G1->nomes, auxAresta->getVerticeAdj()));
+            if(a==0)
+                cout << x << "  " << y << endl;
+            if(x==y){
+
+                return true;
+            }
+            else
+                Union(parent, x, y);
+            cout << parent[0] << "  " << parent[1] << endl;
+            auxAresta = auxAresta->getProx();
+        }
+        auxVertice = auxVertice->getProx();
+    }
+    return false;
+
+    //G1->listaAdjacencia();
+    //cout << endl;
+    //return G1->existeCiclo();*/
+    }
+}
+
+void Grafo::Union(int *parent, int x, int y)
+{
+    int xset = Find(parent, x, 0);
+    int yset = Find(parent, y, 0);
+    if(xset!=yset){
+       parent[xset] = (yset);
+    }
+
+}
+
+int Grafo::Find(int *parent, int i, int tamanho)
+{
+    if(parent[i]==-1)
+        return i;
+    return Find(parent, parent[i], tamanho);
+}
+
+bool Grafo::formaCiclo(bool *visitados, Aresta *aresta, int tamanho, int index1, int index2)
+{
+    if(tamanho==0)
+        return false;
+
+    if(!visitados[index1] || !visitados[index2])
+        return false;
+    return true;
+
+
+
+
+
+/*
+
+    if(solucao->empty())
+        return false;
     //cout << endl;
     Grafo G1;
     list<Aresta>::iterator it;
@@ -737,9 +1030,11 @@ bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
 
     }
     G1.adicionaAresta(aresta->getNomeOrigem(), aresta->getVerticeAdj(), 0);
+
+
     //G1.listaAdjacencia();
     //cout << endl;
-    return G1.existeCiclo();
+    return G1.existeCiclo();*/
 }
 
 
@@ -789,24 +1084,244 @@ bool Grafo::existeCiclo()
     }
 }
 
+Aresta *Grafo::getMelhorAresta(list<string> *verticesNaSolucao, bool *visitados, list<Aresta> *solucao)
+{
+    Vertice *auxVertice;
+    list<Aresta> *arestasCandidatas = new list<Aresta>;
+    list<string>::iterator it;
+
+
+
+    int index1;
+    int a = 0;
+    int index2;
+    int menor = INF;
+    Aresta *arestaMenor = NULL;
+
+
+
+    for(it=verticesNaSolucao->begin(); it!=verticesNaSolucao->end(); it++){
+        auxVertice = getVertice(*it);
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        while(auxAresta!=NULL){
+            //index1 = getIndex(nomes, auxAresta->getNomeOrigem());
+            //index2 = getIndex(nomes, auxAresta->getVerticeAdj());
+            /*
+            if(auxAresta->getPeso()<menor && (!visitados[index1] || !visitados[index2])){
+                arestaMenor = auxAresta;
+                menor = auxAresta->getPeso();
+            }*/
+            if(!contemAresta(auxAresta->getNomeOrigem(), auxAresta->getVerticeAdj(), solucao) && !formaCiclo(solucao, auxAresta)){
+                //cout << "Teste1" << endl;
+                arestasCandidatas->push_back(*auxAresta);
+            }
+            a++;
+            auxAresta = auxAresta->getProx();
+        }
+    }
+    arestasCandidatas = ordernarArestasPorPesoDecrescente(arestasCandidatas);
+    list<Aresta>::iterator it2;
+    it2 = arestasCandidatas->begin();
+    //cout << endl << "Arestas candidatas: " << endl;
+    /*for(it2=arestasCandidatas->begin(); it2!=arestasCandidatas->end(); it2++){
+        cout << it2->getNomeOrigem() << " -> " << it2->getVerticeAdj() << endl;
+    }*/
+    //cout << endl;
+    it2 = arestasCandidatas->begin();
+    if(it2==arestasCandidatas->end())
+        return NULL;
+    //cout << "teste1" << endl;
+    Aresta *auxAresta = &(*it2);
+    return auxAresta;
+}
+
+int Grafo::minKey(float *key, bool *verticesNaArvore)
+{
+    float menor = INT_MAX;
+    int menorIndex;
+    for(int i=0; i<ordemGrafo; i++){
+        if(!verticesNaArvore[i] && key[i]<menor){
+            menor = key[i];
+            menorIndex = i;
+        }
+    }
+    return menorIndex;
+}
 
 void Grafo::arvoreGeradoraMinimaPrim()
 {
+    /*
     if(!grafoVazio()){
+        bool visitados[ordemGrafo];
+        list<string> verticesNaSolucao;
+        list<Aresta>::iterator it;
+        list<string>::iterator itString;
+        int index;
+        int index2;
+        list<Aresta> solucao;
+        Vertice *auxVertice = primeiro;
+        list<Aresta> *candidatos = new list<Aresta>;
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        while(auxAresta!=NULL){
+            candidatos->push_back(*auxAresta);
+            auxAresta = auxAresta->getProx();
+        }
+        index = getIndex(nomes, auxVertice->getNome());
+        candidatos = ordernarArestasPorPesoDecrescente(candidatos);
+        it = candidatos->begin();
+        solucao.push_back(*it);
+        visitados[index] = true;
+        verticesNaSolucao.push_back(auxVertice->getNome());
+        candidatos->clear();
+        while(verticesNaSolucao.size()<ordemGrafo-1){
+            itString = verticesNaSolucao.begin();
+            while(itString!=verticesNaSolucao.end()){
+                auxVertice = getVertice(*itString);
+                auxAresta = auxVertice->getArestaAdj();
+                while(auxAresta!=NULL){
+                    /*
+                    index = getIndex(nomes, auxAresta->getNomeOrigem());
+                    index2 = getIndex(nomes, auxAresta->getVerticeAdj());
+                    if(!visitados[index] || !visitados[index2]){
+                        candidatos->push_back(*auxAresta);
+                    }
+
+                    if(!contemAresta(auxAresta->getNomeOrigem(), auxAresta->getVerticeAdj(), &solucao))
+                        candidatos->push_back(*auxAresta);
+                    auxAresta = auxAresta->getProx();
+                }
+                itString++;
+            }
+            candidatos = ordernarArestasPorPesoDecrescente(candidatos);
+            it = candidatos->begin();
+            index = getIndex(nomes, it->getNomeOrigem());
+            index2 = getIndex(nomes, it->getVerticeAdj());
+            visitados[index] = true;
+            visitados[index2] = true;
+            verticesNaSolucao.push_back(it->getVerticeAdj());
+            solucao.push_back(*it);
+            candidatos->clear();
+        }
+        int contador = 0;
+        float pesos = 0;
+        for(it=solucao.begin(); it!=solucao.end(); it++){
+            cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << "  " << it->getPeso() << endl;
+            pesos += it->getPeso();
+            contador++;
+        }
+        cout << "Contador: " << contador << endl;
+        cout << "Pesos: " << pesos << endl;
+    }
+*/
+if(true){
+
+    if(!grafoVazio()){
+        string *parent = new string[ordemGrafo];
+        float *key = new float[ordemGrafo];
+        bool *verticesNaArvore = new bool[ordemGrafo];
+
+        for(int i=0; i<ordemGrafo;i++){
+            key[i] = INF;
+            verticesNaArvore[i] = false;
+        }
+
+        Vertice *auxVertice = primeiro;
+        int index = getIndex(nomes, auxVertice->getNome());
+        parent[index] = "-1";
+        key[index] = 0;
+        for(int i=0; i<ordemGrafo-1; i++){
+            int u = minKey(key, verticesNaArvore);
+            verticesNaArvore[u] = true;
+            Vertice *verticeEscolhido = primeiro;
+            for(int j=0; j<ordemGrafo; j++){
+                if(j==u)
+                    break;
+                verticeEscolhido = verticeEscolhido->getProx();
+            }
+            auxVertice = primeiro;
+            Aresta *auxAresta = verticeEscolhido->getArestaAdj();
+            while(auxAresta!=NULL){
+                index = getIndex(nomes, auxAresta->getVerticeAdj());
+                if(!verticesNaArvore[index] && auxAresta->getPeso()<key[index]){
+                    parent[index] = verticeEscolhido->getNome();
+                    key[index] = auxAresta->getPeso();
+                }
+                auxAresta = auxAresta->getProx();
+            }
+        }
+        float soma = 0;
+        for(int i=1; i<ordemGrafo; i++){
+            auxVertice = primeiro;
+            for(int j=0; j<ordemGrafo; j++){
+                if(i==j)
+                    break;
+                auxVertice = auxVertice->getProx();
+            }
+            cout << parent[i] << " -> " << auxVertice->getNome() << " (" << key[i] << ")" << endl;
+            soma += key[i];
+        }
+        cout << endl << "somatorio dos pesos: " << soma << endl;
+    }
+}
+        if(false){/*
+        int contador = 0;
+        list<string> verticesNaSolucao;
+        bool *visitados = new bool[ordemGrafo];
+        list<Aresta> solucao;
+        Vertice *auxVertice = primeiro;
+        verticesNaSolucao.push_back(auxVertice->getNome());
+        int index = getIndex(nomes, auxVertice->getNome());
+        for(int i=0; i<ordemGrafo; i++){
+            visitados[i] = false;
+        }
+        visitados[index] = true;
+        while(solucao.size()<ordemGrafo-1){
+            Aresta *auxAresta;
+            Aresta *melhorAresta = getMelhorAresta(&verticesNaSolucao, visitados, &solucao);
+            if(melhorAresta!=NULL){
+                contador++;
+                //cout << endl <<  "Melhor aresta, escolhida: " << endl;
+                //cout << melhorAresta->getNomeOrigem() << " -> " << melhorAresta->getVerticeAdj() << endl << endl;
+                index = getIndex(nomes, melhorAresta->getVerticeAdj());
+                visitados[index] = true;
+                verticesNaSolucao.push_back(melhorAresta->getVerticeAdj());
+                solucao.push_back(*melhorAresta);
+            }
+            cout << "Tamanho da solucao: " << solucao.size() << endl;
+        }
+        list<Aresta>::iterator it;
+        for(it=solucao.begin(); it!=solucao.end(); it++){
+            cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
+        }
+        cout << contador << endl;
+        cout << "\n\n";
+    }*/
+    }
+
+    if(false){
+/*
+    if(!grafoVazio()){
+        string *nomes = new string[ordemGrafo];
         int *inseridosNaArvore = new int[ordemGrafo];
         list<string> *verticesNaSolucao = new list<string>;
         list<string> *verticesForaDaSolucao= new list<string>;
-
+        bool *arvore = new bool[ordemGrafo];
         Vertice *auxVertice = primeiro;
+        int i=0;
         while(auxVertice!=NULL){
+            nomes[i] = auxVertice->getNome();
+            arvore[i] = false;
             verticesForaDaSolucao->push_back(auxVertice->getNome());
             auxVertice = auxVertice->getProx();
+            i++;
         }
 
         srand(time(NULL));
-        int verticeAleatorio = rand()%ordemGrafo;
+        i = rand()%ordemGrafo;
+        arvore[i] = true;
         auxVertice = primeiro;
-        for(int i=0; i<verticeAleatorio; i++){
+
+        for(int j=0; j<i; j++){
             auxVertice = auxVertice->getProx();
         }
 
@@ -815,35 +1330,49 @@ void Grafo::arvoreGeradoraMinimaPrim()
         verticesForaDaSolucao->remove(auxVertice->getNome());
 
         list<Aresta> *solucao = new list<Aresta>;
+        list<Aresta> *arestasCandidatas = new list<Aresta>;
+        list<Aresta>::iterator it2;
+        list<string>::iterator it1;
+        Aresta *auxAresta;
+        int index1;
+        int index2;
         while(!verticesForaDaSolucao->empty()){
-            list<Aresta> *arestasCandidatas = new list<Aresta>;
-            list<string>::iterator it1;
             for(it1=verticesNaSolucao->begin(); it1!=verticesNaSolucao->end(); it1++){
-                Aresta *auxAresta = getVertice(*it1)->getArestaAdj();
+                auxAresta = getVertice(*it1)->getArestaAdj();
+                index1 = getIndex(nomes, auxAresta->getNomeOrigem());
+                index2 = getIndex(nomes, auxAresta->getVerticeAdj());
                 while(auxAresta!=NULL){
+                   // cout << "teste" << endl;
                     if(!contemAresta(getVertice(*it1)->getNome(), auxAresta->getVerticeAdj(), arestasCandidatas) && !formaCiclo(solucao, auxAresta)){
                         arestasCandidatas->push_back(*auxAresta);
+                        //cout << "Aresta candidata: " << auxAresta->getNomeOrigem() << " -> " << auxAresta->getVerticeAdj() << endl;
                     }
                     auxAresta = auxAresta->getProx();
                 }
             }
-            arestasCandidatas = ordernarArestasPorPeso(arestasCandidatas);
-            list<Aresta>::iterator it2;
+            arestasCandidatas = ordernarArestasPorPesoDecrescente(arestasCandidatas);
             it2 = arestasCandidatas->begin();
             solucao->push_back(*it2);
+            index1 = getIndex(nomes, it2->getNomeOrigem());
+            index2 = getIndex(nomes, it2->getVerticeAdj());
+            arvore[index1] = true;
+            arvore[index2] = true;
+
             verticesNaSolucao->push_back(it2->getVerticeAdj());
             verticesForaDaSolucao->remove(it2->getVerticeAdj());
+            arestasCandidatas->clear();
         }
+        //cout << "Teste" << endl;
         list<Aresta>::iterator it;
         for(it=solucao->begin(); it!=solucao->end(); it++){
             cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
         }
-        cout << "Teste";
+        cout << "\n\n";
 
-    }
+    }*/}
 }
 
-void Grafo::caminhoMinimoDijkstra(string vertice1, string vertice2)
+void Grafo::caminhoMinimoDijkstra(string vertice1)
 {
     string *nomes = new string[ordemGrafo];
     int index;
@@ -906,7 +1435,7 @@ int Grafo::distanciaMinima(int dist[], bool sptSet[])
     return indexMenor;
 }
 
-void Grafo::caminhoMinimoFloyd()
+void Grafo::caminhoMinimoFloyd(string vertice)
 {
     if(!grafoVazio()){
         string *nomes = new string[ordemGrafo];
@@ -971,15 +1500,15 @@ void Grafo::caminhoMinimoFloyd()
         }
 
 
-
+        int index = getIndex(nomes, vertice);
+        auxVertice = primeiro;
         for(int i=0; i<ordemGrafo; i++){
-            for(int j=0; j<ordemGrafo; j++){
-                if(dist[i][j] == INF)
-                    cout << "INF  ";
-                else
-                    cout << dist[i][j] << "    ";
-            }
-            cout << endl;
+            if(dist[index][i]==INF)
+                cout << vertice << " -> " << auxVertice->getNome() << " (INF)" << endl;
+            else
+                cout << vertice << " -> " << auxVertice->getNome() << " (" << dist[index][i] << ")" << endl;
+            cout << i << endl;
+            auxVertice = auxVertice->getProx();
         }
     }
 }
@@ -1116,3 +1645,132 @@ void Grafo::fechoTransitivoIndireto(string nome, bool direcionado)
 }
 
 
+void Grafo::conjuntoMaximoIndependenteGuloso()
+{
+    if(!grafoVazio()){
+        list<Vertice> *vertices = new list<Vertice>;
+        list<Vertice> *solucao = new list<Vertice>;
+        list<Vertice>::iterator it;
+        Vertice *auxVertice = primeiro;
+        while(auxVertice!=NULL){
+            vertices->push_back(*auxVertice);
+            auxVertice = auxVertice->getProx();
+        }
+        vertices = ordenaGrauDecrescente(vertices);
+        while(!vertices->empty()){
+            it = vertices->begin();
+            auxVertice = &(*it);
+            vertices->pop_front();
+            if(!verticesVizinhos(solucao, auxVertice)){
+                solucao->push_back(*auxVertice);
+            }
+        }
+        cout << endl;
+        list<string>::iterator it2;
+        for(it=solucao->begin(); it!=solucao->end(); it++)
+            cout << it->getNome() << "  ";
+        cout << endl << endl;
+    }
+}
+
+list<Vertice> *Grafo::ordenaGrauDecrescente(list<Vertice> *vertices)
+{
+    list<Vertice>::iterator it1;
+    list<Vertice>::iterator it2;
+    for(it1=vertices->begin(); it1!=vertices->end(); it1++){
+        for(it2=vertices->begin(); it2!=vertices->end(); it2++){
+            if(it1->getGrauSaida() < it2->getGrauSaida()){
+                Vertice auxVertice = *it1;
+                *it1 = *it2;
+                *it2 = auxVertice;
+            }
+        }
+    }
+    return vertices;
+}
+
+bool Grafo::verticesVizinhos(list<Vertice> *solucao, Vertice *v)
+{
+    list<Vertice>::iterator it;
+    for(it=solucao->begin(); it!=solucao->end(); it++){
+        Aresta *auxAresta = it->getArestaAdj();
+        while(auxAresta!=NULL){
+            if(auxAresta->getVerticeAdj()==v->getNome() || auxAresta->getNomeOrigem()==v->getNome()){
+                return true;
+            }
+            auxAresta = auxAresta->getProx();
+        }
+    }
+    return false;
+}
+
+
+void Grafo::conjuntoMaximoIndependenteGulosoRandomizado(int intMax, float alpha)
+{
+    if(!grafoVazio()){
+        ofstream file;
+        file.open("gulosoRandomizado.txt");
+        srand (time(NULL));
+        list<Vertice> *solucao = new list<Vertice>;
+        list<Vertice> *candidatos = new list<Vertice>;
+        Vertice *auxVertice;
+        float alfa[3] = {0.1, 0.2, 0.3};
+        list<Vertice>::iterator it;
+        for(int p=0;p<3; p++){
+            file << "ALFA " << alfa[p] << "\n\n";
+            for(int m=0; m<20; m++){
+                candidatos = possiveisAdicionarIndependente(solucao);
+                candidatos = ordenaGrauDecrescente(candidatos);
+                int contador = 0;
+                while(contador<intMax && !candidatos->empty()){
+                    int n = ceil(candidatos->size()*alfa[p]);
+                    int random = rand()%n;
+                    it = candidatos->begin();
+                    for(int i=0; i<random; i++)
+                        it++;
+                    auxVertice = &(*it);
+
+                    solucao->push_back(*auxVertice);
+                    candidatos = possiveisAdicionarIndependente(solucao);
+                    candidatos = ordenaGrauDecrescente(candidatos);
+                    contador++;
+
+                }
+
+                file << "Execucao " << m+1 << "\n\t";
+                this->imprimirSolucao(solucao, &file);
+                solucao->clear();
+                candidatos->clear();
+            }
+        }
+        delete solucao;
+    }
+}
+
+void Grafo::imprimirSolucao(list<Vertice> *solucao, ofstream *file)
+{
+    if(!solucao->empty()){
+        list<Vertice>::iterator it;
+
+
+        for(it=solucao->begin(); it!=solucao->end(); it++){
+            *file << it->getNome() << "  ";
+        }
+        *file << "\n\n";
+    }
+}
+
+list<Vertice> *Grafo::possiveisAdicionarIndependente(list<Vertice> *conjuntoSolucao)
+{
+    list<Vertice> *candidatos = new list<Vertice>;
+    list<Vertice>::iterator it1;
+    list<Vertice>::iterator it2;
+    Vertice *auxVertice = primeiro;
+    while(auxVertice!=NULL){
+        if(!verticesVizinhos(conjuntoSolucao, auxVertice))
+            candidatos->push_back(*auxVertice);
+        auxVertice = auxVertice->getProx();
+    }
+    return candidatos;
+
+}
