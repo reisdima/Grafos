@@ -18,6 +18,10 @@ Grafo::Grafo()
 
 }
 
+/*
+Destrutor do grafo, desaloca todo o espaço ocupado pelos vértices na lista.
+*/
+
 Grafo::~Grafo()
 {
     Vertice *auxVertice = this->primeiro;
@@ -38,6 +42,11 @@ Grafo::~Grafo()
     this->primeiro = NULL;
 }
 
+/*************************************
+*A função apagarGrafo apaga, a partir*
+*do primeiro vértice, todos os compo-*
+*nentes do Grafo (vértices e arestas)*
+**************************************/
 void Grafo::apagarGrafo()
 {
     //cout << "Apagando grafo" << endl;
@@ -60,6 +69,14 @@ void Grafo::apagarGrafo()
     primeiro = NULL;
 }
 
+/*************************************
+*A função existeVertice recebe como  *
+*parâmetro uma string que indica o   *
+*vertice que se deseja verificar a   * 
+*existência. Caso o vértice exista a * 
+*função retornará TRUE caso contrário*
+*a função retornará FALSE.           *
+**************************************/
 bool Grafo::existeVertice(string nome)
 {
     Vertice *aux = primeiro;
@@ -77,7 +94,7 @@ Vertice *Grafo::getVertice(string nome)
         while(aux->getNome()!=nome && aux!=NULL)
             aux=aux->getProx();
         if(aux==NULL){
-            //vertice n�o existe
+            //vertice não existe
         }
     }
     else{
@@ -86,6 +103,12 @@ Vertice *Grafo::getVertice(string nome)
     return aux;
 }
 
+/*************************************
+*A função adicionaVertice recebe como*
+*parâmetro o nome do vértice desejado*
+*Se este vértice não existir ele é   *
+*adicionado.                         *
+**************************************/
 void Grafo::adicionaVertice(string nome)
 {
     if(!existeVertice(nome)){
@@ -106,6 +129,12 @@ void Grafo::adicionaVertice(string nome)
     }
 }
 
+/*************************************
+*A função adicionaAresta recebe como *
+*parâmetro o nome da aresta desejada *
+*Se esta aresta não existir ela é    *
+*adicionada.                         *
+**************************************/
 void Grafo::adicionaAresta(string nome1, string nome2, bool direcionado)
 {
     if(!existeVertice(nome1))
@@ -223,7 +252,13 @@ void Grafo::adicionaAresta(string nome1, string nome2, float peso, bool direcion
     }
 }
 
-
+/*************************************
+*A função removeAresta recebe como   *
+*parâmetro o nome dos vértices que   *
+*formam a aresta a ser removida.     *
+*Se estes vértices existirem a aresta*
+*é removida                          *
+**************************************/
 void Grafo::removeAresta(string nome1, string nome2, bool direcionado)
 {
     if(existeVertice(nome1) && existeVertice(nome2)){
@@ -288,7 +323,7 @@ void Grafo::removeAresta(string nome1, string nome2, bool direcionado)
         }
     }
     else{
-        //pelo menos algum vertice n�o existe
+        //pelo menos algum vertice não existe
     }
 }
 
@@ -322,7 +357,7 @@ void Grafo::removeVertice(string nome, bool direcionado)
         nomes->remove(nome);
     }
     else{
-        //vertice n�o existe
+        //vertice não existe
     }
 }
 
