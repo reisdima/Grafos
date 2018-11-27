@@ -256,8 +256,10 @@ void Grafo::adicionaAresta(string nome1, string nome2, float peso, bool direcion
 *A função removeAresta recebe como   *
 *parâmetro o nome dos vértices que   *
 *formam a aresta a ser removida.     *
-*Se estes vértices existirem a aresta*
-*é removida                          *
+*Se estes vértices existirem, é 	 *
+*então verificado se existe aresta 	 *
+*entre esses vértices. Então a aresta*
+*é removida.                         *
 **************************************/
 void Grafo::removeAresta(string nome1, string nome2, bool direcionado)
 {
@@ -327,6 +329,13 @@ void Grafo::removeAresta(string nome1, string nome2, bool direcionado)
     }
 }
 
+/*************************************
+*A função removeVertice recebe como  *
+*parâmetro o nome do vértice que     *
+*quer ser removido ser removida.     *
+*Se este vértice existire, o mesmo é *
+*removido.                  		 *
+**************************************/
 void Grafo::removeVertice(string nome, bool direcionado)
 {
     if(existeVertice(nome)){
@@ -361,7 +370,10 @@ void Grafo::removeVertice(string nome, bool direcionado)
     }
 }
 
-
+/*************************************
+*imprime o grafo no formato de lista *
+*de adjascencia                		 *
+**************************************/
 void Grafo::listaAdjacencia()
 {
     Vertice *auxVertice = primeiro;
@@ -377,7 +389,10 @@ void Grafo::listaAdjacencia()
     }
 }
 
-
+/*************************************
+*imprime o grau do vertice passado	 *
+*por referência						 *
+**************************************/
 void Grafo::grauVertice(string nome, bool direcionado)
 {
     if(existeVertice(nome)){
@@ -396,7 +411,12 @@ void Grafo::grauVertice(string nome, bool direcionado)
     }
 }
 
-
+/*************************************
+*Verifica a K regularidade do grafo  *
+*primeiro varifica se o grafo é vazio*
+*em seguida retorna TRUE caso o grafo*
+*seja Kregular e FALSE caso contrario*
+**************************************/
 bool Grafo::K_Regularidade(int k)
 {
     if(!grafoVazio()){
@@ -427,20 +447,39 @@ bool Grafo::K_Regularidade(int k)
 */
 }
 
+/***************************************
+*Utilizada por outras funções a 	   *
+*função aumentaOrdem aumenta a ordem do*
+*grafo.								   *
+****************************************/
 void Grafo::aumentaOrdem(){
     ordemGrafo++;
 }
 
+/***************************************
+*Utilizada por outras funções a 	   *
+*função diminuiOrdem diminui a ordem do*
+*grafo.								   *
+****************************************/
 void Grafo::diminuiOrdem(){
     ordemGrafo--;
 }
 
+/*************************************
+*Utilizada por outras funções a 	 *
+*função getOrdemGrafo retorna a ordem*
+do grafo.							 *	  
+**************************************/
 int Grafo::getOrdemDoGrafo(){
     return ordemGrafo;
 }
 
 
-
+/*************************************
+*A função vizinhancaAberta recebe o  *
+*nome do vértice como parâmetro e 	 *
+*imprime a sua vizinhança aberta	 *	  
+**************************************/
 void Grafo::vizinhancaAberta(string nome)
 {
     if(existeVertice(nome)){
@@ -458,6 +497,11 @@ void Grafo::vizinhancaAberta(string nome)
     }
 }
 
+/*************************************
+*A função vizinhancaFechada recebe o *
+*nome do vértice como parâmetro e 	 *
+*imprime a sua vizinhança fechada	 *	  
+**************************************/
 void Grafo::vizinhancaFechada(string nome)
 {
     if(existeVertice(nome)){
@@ -475,7 +519,12 @@ void Grafo::vizinhancaFechada(string nome)
     }
 }
 
-
+/******************************************
+*A função grafoCompleto recebe o  		  *
+*verifica se o grafo desejado é 		  *
+*completo. Retorna TRUE caso seja completo*
+*e  FALSE caso não seja completo. 		  *
+*******************************************/
 bool Grafo::grafoCompleto()
 {
     if(!grafoVazio()){
@@ -504,7 +553,12 @@ bool Grafo::grafoCompleto()
     return true;*/
 }
 
-
+/*********************************************
+*A função grafoBipartido verifica se o grafo  *
+*desejado é bipartido e utiliza uma função    *
+*auxiliar (auxGrafoBipartido) para verificar a*
+*bipartição.								  *
+**********************************************/
 bool Grafo::grafoBipartido()
 {
     if(!grafoVazio()){
@@ -567,8 +621,10 @@ bool Grafo::grafoBipartido()
 */
     }
 }
-
-
+****************
+/*********************************************
+*A função auxGrafoBipartido verifica se o grafo recebe como referencia o vertice auxiliar, uma pilha , 
+**********************************************/ 
 bool Grafo::auxGrafoBipartido(Vertice *auxVertice, stack<string>pilha, int *vizitado, int *coloracao, string *nomes, int cor)
 {
     /*cout <<endl <<  "Cor: " << cor<<endl;
@@ -607,7 +663,7 @@ bool Grafo::auxGrafoBipartido(Vertice *auxVertice, stack<string>pilha, int *vizi
 
     }
 }
-
+******************
 int Grafo::getIndex(string *nomes, string nome)
 {
     for(int i=0; i<ordemGrafo; i++){
@@ -615,7 +671,7 @@ int Grafo::getIndex(string *nomes, string nome)
             return i;
     }
 }
-
+****************
 int Grafo::getIndex(list<string> *nomes, string nome)
 {
     list<string>::iterator it;
@@ -628,11 +684,19 @@ int Grafo::getIndex(list<string> *nomes, string nome)
 
 }
 
+/************************************
+*Verifica se o grafo é ou não vazio.*
+*Retorna TRUE  para o grafo vazio ou*
+*FALSE para o grafo não vazio.		*
+*************************************/
 bool Grafo::grafoVazio()
 {
     return (primeiro==NULL);
 }
 
+/*********************************************
+*****************************
+**********************************************/
 void Grafo::sequenciaGraus(bool direcionado)
 {
     if(!grafoVazio()){
@@ -738,7 +802,11 @@ void Grafo::sequenciaGraus(bool direcionado)
     }*/
 }
 
-
+/**********************************************
+*Imprime a Arvore Geradora Mínima utilizando o*
+*algoritmo de Kruskal. Imprime a árvore e a	  *
+*soma de seus pesos 						  *
+***********************************************/
 
 void Grafo::arvoreGeradoraMinimaKruskal()
 {
@@ -854,6 +922,14 @@ if(false){
 
 }
 
+/***************************************************
+*A função verifica se o grafo contem determinada   *
+*aresta, recebe o seu vértice de origem e o seu	   *
+*vértie de destino como referência, assim como,	   *
+*uma lista com as arestas do grafo.				   *
+*Retorna TRUE caso a aresta esteja contida no grafo*
+*Ou FALSE caso a aresta não esteja cotida no grafo *
+***************************************************/
 bool Grafo::contemAresta(string origem, string destino, list<Aresta> *arestas)
 {
     list<Aresta>::iterator it;
@@ -866,6 +942,10 @@ bool Grafo::contemAresta(string origem, string destino, list<Aresta> *arestas)
     return false;
 }
 
+/*********************************************
+*A função recebe como parâmetro uma lista de *
+*arestas e as ordena em ordem decrescente    *
+**********************************************/
 list<Aresta> *Grafo::ordernarArestasPorPesoDecrescente(list<Aresta> *arestas)
 {
 
@@ -886,6 +966,14 @@ list<Aresta> *Grafo::ordernarArestasPorPesoDecrescente(list<Aresta> *arestas)
     return arestas;
 }
 
+
+ /**********************************************
+*A função recebe como referência uma lista de  *
+*arestas e a aresta inicial e verifica se entre*
+*elas forma um ciclo. Retorna TRUE caso ocorra *
+*a formação de um ciclo ou FALSE caso não      *
+*ocorra a formação de um ciclo                 *
+************************************************/
 bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
 {
     if(solucao->empty())
@@ -1016,7 +1104,7 @@ bool Grafo::formaCiclo(list<Aresta> *solucao, Aresta *aresta)
     //return G1->existeCiclo();*/
     }
 }
-
+****************
 void Grafo::Union(int *parent, int x, int y)
 {
     int xset = Find(parent, x, 0);
@@ -1026,14 +1114,14 @@ void Grafo::Union(int *parent, int x, int y)
     }
 
 }
-
+************
 int Grafo::Find(int *parent, int i, int tamanho)
 {
     if(parent[i]==-1)
         return i;
     return Find(parent, parent[i], tamanho);
 }
-
+************
 bool Grafo::formaCiclo(bool *visitados, Aresta *aresta, int tamanho, int index1, int index2)
 {
     if(tamanho==0)
@@ -1072,7 +1160,11 @@ bool Grafo::formaCiclo(bool *visitados, Aresta *aresta, int tamanho, int index1,
     return G1.existeCiclo();*/
 }
 
-
+ /**********************************************
+*A função recebe verifica no grafo se ocorre um*
+*ciclo. Retorna TRUE caso ocorra ou FALSE caso *
+*não ocorra a formação de um ciclo             *
+************************************************/
 bool Grafo::existeCiclo()
 {
     if(!grafoVazio()){
@@ -1119,6 +1211,7 @@ bool Grafo::existeCiclo()
     }
 }
 
+********************
 Aresta *Grafo::getMelhorAresta(list<string> *verticesNaSolucao, bool *visitados, list<Aresta> *solucao)
 {
     Vertice *auxVertice;
@@ -1169,7 +1262,7 @@ Aresta *Grafo::getMelhorAresta(list<string> *verticesNaSolucao, bool *visitados,
     Aresta *auxAresta = &(*it2);
     return auxAresta;
 }
-
+*************
 int Grafo::minKey(float *key, bool *verticesNaArvore)
 {
     float menor = INT_MAX;
