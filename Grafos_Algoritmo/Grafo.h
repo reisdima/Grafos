@@ -17,6 +17,22 @@ public:
     void adicionaVertice(string nome);
     void adicionaAresta(string nome1, string nome2, bool direcionado);
     void adicionaAresta(string nome1, string nome2, float peso, bool direcionado);
+
+
+//Funcoes com IDs
+    void adicionaVertice(int id);
+    void adicionaAresta(int id1, int id2, float peso, bool direcionado);
+    void adicionaAresta(int id1, int id2, bool direcionado);
+    void removeAresta(int id1, int id2, bool direcionado);
+    void removeVertice(int id, bool direcionado);
+    void vizinhancaAberta(int id);
+    void vizinhancaFechada(int id);
+
+    void construirIds();
+
+
+
+//Funcoes com strgin nome
     void removeVertice(string nome, bool direcionado);
     void removeAresta(string nome1, string nome2, bool direcionado);
     void listaAdjacencia();
@@ -41,8 +57,21 @@ public:
     void conjuntoMaximoIndependenteGulosoRandomizado(int intMax, float alpha);
     void conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax);
 
+    void numeroVertices(int n);
+    void teste();
+
 private:
+    bool usaId;
+    bool *verticesNoGrafo;
+    bool existeVertice(int id);
+    Vertice *getVertice(int id);
+
+
+
+    string *ids;
+
     list<string> *nomes;
+
     Vertice *primeiro;
     bool existeVertice(string nome);
     Vertice *getVertice(string nome);
@@ -54,18 +83,21 @@ private:
     int getIndex(string *nomes, string nome);
     bool auxGrafoBipartido(Vertice *auxVertice, stack<string>pilha, int *vizitado, int *coloracao, string *nomes, int cor);
     bool contemAresta(string origem, string destino, list<Aresta> *arestas);
-    list<Aresta> *ordernarArestasPorPesoDecrescente(list<Aresta> *arestas);
+    list<Aresta> *ordernarArestasPorPesoCrescente(list<Aresta> *arestas);
     bool formaCiclo(list<Aresta> *solucao, Aresta *aresta);
     bool formaCiclo(bool *solucao, Aresta *aresta, int tamanho, int index1, int index2);
     int distanciaMinima(int dist[], bool sptSet[]);
     list<Vertice> *ordenaGrauDecrescente(list<Vertice> *vertices);
     bool verticesVizinhos(list<Vertice> *solucao, Vertice *v);
-    list<Vertice> *possiveisAdicionarIndependente(list<Vertice> *conjuntoSolucao);
+    list<Vertice> *possiveisAdicionarIndependente(list<Vertice> *conjuntoSolucao, bool *verticesNaSolucao);
     Aresta *getMelhorAresta(list<string> *verticesNaSolucao, bool *visitados, list<Aresta> *solucao);
     int Find(int *parent, int n, int tamanho);
     void Union(int *parent, int x, int y);
     int minKey(float *key, bool *verticesNaArvore);
     void imprimirSolucao(list<Vertice> *solucao, ofstream *file);
+
+
+    void removeVerticesAdjacentes(list<Vertice> *candidatos, string verticeAdicionado, int vizinhos);
 };
 
 #endif // GRAFO_H

@@ -65,3 +65,24 @@ string Aresta::getNomeOrigem()
 {
     return this->verticeOrigem;
 }
+
+
+void Aresta::setIdVerticeAdj(int id)
+{
+    this->idVerticeAdj = id;
+}
+
+void Aresta::setIdVerticeOrigem(int id)
+{
+    this->idVerticeOrigem = id;
+}
+
+int Aresta::getIdVerticeAdj()
+{
+    return this->idVerticeAdj;
+}
+
+int Aresta::getIdVerticeOrigem()
+{
+    return this->idVerticeOrigem;
+}

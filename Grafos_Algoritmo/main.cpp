@@ -2,6 +2,8 @@
 #include <string>
 #include "Grafo.h"
 #include <fstream>
+#include <sstream>
+#include <time.h>
 
 
 
@@ -11,17 +13,27 @@ using namespace std;
 void leituraDeArquivo(string nomeArquivo, Grafo *G, bool direcionado)
 {
     //ifstream file("grafo_1000_1.txt");
-    ifstream file("grafo_125.txt");
+    ifstream file("Teste1.txt");
     int n;
     string nome1, nome2;
+    //int id1, id2;
+    //stringstream ss;
     float peso;
+    double tempoInicio = clock();
+    double tempoFinal;
     if(file.is_open()){
         file >> n;
-        while(file >> nome1 >> nome2 >> peso){
-            G->adicionaAresta(nome1, nome2, peso, direcionado);
-            //cout << "a";
+        //G->numeroVertices(n);
+        while(file >> nome1 >> nome2){
+            //ss << nome1;
+            //ss >> id1;
+            //ss << nome2;
+            //ss >> id2;
+            G->adicionaAresta(nome1, nome2, direcionado);
         }
+        tempoFinal = clock();
     }
+    cout << "Tempo decorrido na leitura de arquivo: " << (double)(tempoFinal - tempoInicio)/CLOCKS_PER_SEC << endl << endl;
 }
 
 void Menu()
@@ -39,8 +51,8 @@ void Menu()
     cout << "[11] Verificar se o grafo e completo" << endl;
     cout << "[12] Verificar se o grafo e bipartido" << endl;
     cout << "[13] Imprimir sequencia de graus" << endl;
-    cout << "[14] Arvore geradore minima por Kruskal" << endl;
-    cout << "[15] Arvore geradore minima por Prim" << endl;
+    cout << "[14] Arvore geradora minima por Kruskal" << endl;
+    cout << "[15] Arvore geradora minima por Prim" << endl;
     cout << "[16] Caminho minimo por Dijkstra" << endl;
     cout << "[17] Caminho minimo por Floyd" << endl;
     cout << "[18] Fecho transitivo direto" << endl;
@@ -52,8 +64,9 @@ void Menu()
 }
 
 
-int main()
+int main(int args, char *arqv[])
 {
+
     Grafo G;
     bool direcionado = false;
     //string nomeArquivo = "grafo_1000_1.txt";
@@ -219,6 +232,12 @@ int main()
                 else
                     cout << "O grafo nao tem ciclo" << endl;
             }
+            else if(escolha==23){
+                G.conjuntoMaximoIndependenteGulosoRandomizadoReativo(500);
+            }
+            else if(escolha==24){
+                G.teste();
+            }
             else if(escolha==0)
                 break;
         }
@@ -226,7 +245,7 @@ int main()
     else{
 
     }
-
+/*
     G.adicionaAresta("A", "B", 7, true);
     G.adicionaAresta("A", "D", 5, true);
     G.adicionaAresta("D", "B", 97, true);
@@ -237,7 +256,7 @@ int main()
     G.adicionaAresta("B", "C", 8, true);
     G.adicionaAresta("C", "E", 5, true);
     G.adicionaAresta("E", "G", 9, true);
-
+*/
 
     //G.grauVertice("A", direcionado);
     //cout << G.K_Regularidade(2) << endl;

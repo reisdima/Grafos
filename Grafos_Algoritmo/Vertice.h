@@ -16,11 +16,15 @@ public:
     void setProx(Vertice *p);           //Get do proximo vertice
     void setArestaAdj(Aresta *adj);     //Set da Aresta Adjascente ao vertice
 
+    void setId(int id);
+
     string getNome();                   //Get do nome do vertice
     int getGrauEntrada();                      //Get do grau do vertice
     int getGrauSaida();                      //Get do grau do vertice
     Vertice *getProx();                 //Get do proximo vertice
     Aresta *getArestaAdj();             //Get da Aresta Adjascente ao vertice
+
+    int getId();
 
     void aumentaGrauEntrada();                 //Aumenta o grau do vertice
     void aumentaGrauSaida();                 //Aumenta o grau do vertice
@@ -29,6 +33,7 @@ public:
 
 private:
     string nome;                        //nome do vertice
+    int id;
     int grau;
     int grauEntrada;                    //grau de entrada do vertice
     int grauSaida;                      //grau de saida do vertice

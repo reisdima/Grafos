@@ -8,6 +8,7 @@
 #include <time.h>
 #include <math.h>
 #include <fstream>
+//#include <chrono>
 #define INF 99999
 
 Grafo::Grafo()
@@ -15,6 +16,7 @@ Grafo::Grafo()
     primeiro = NULL;
     ordemGrafo = 0;
     nomes = new list<string>;
+    usaId = false;
 
 }
 
@@ -37,6 +39,313 @@ Grafo::~Grafo()
     }
     this->primeiro = NULL;
 }
+
+
+
+//Grafo com id
+void Grafo::numeroVertices(int n)
+{
+    usaId = true;
+    verticesNoGrafo = new bool[n];
+    for(int i=0; i<n; i++){
+        verticesNoGrafo[i] = false;
+    }
+}
+
+
+
+void Grafo::construirIds()
+{
+    int n=0;
+    ids = new string[ordemGrafo];
+    Vertice *auxVertice = primeiro;
+    while(auxVertice!=NULL){
+        auxVertice->setId(n);
+        ids[n] = auxVertice->getNome();
+        auxVertice = auxVertice->getProx();
+        n++;
+    }
+}
+
+
+
+void Grafo::adicionaVertice(int id)
+{
+    if(!existeVertice(id)){
+        Vertice *novo = new Vertice();
+        novo->setId(id);
+        novo->setArestaAdj(NULL);
+        if(primeiro == NULL){
+            primeiro = novo;
+        }
+        else{
+            Vertice *aux = primeiro;
+            while(aux->getProx()!=NULL)
+                aux = aux->getProx();
+            aux->setProx(novo);
+        }
+        aumentaOrdem();
+        verticesNoGrafo[id-1] = true;
+    }
+}
+
+bool Grafo::existeVertice(int id)
+{
+    if(id<ordemGrafo && verticesNoGrafo!=NULL)
+        return verticesNoGrafo[id-1];
+    Vertice *auxVertice = primeiro;
+    while(auxVertice!=NULL){
+        if(auxVertice->getId()==id)
+            return true;
+        auxVertice = auxVertice->getProx();
+    }
+    return false;
+}
+
+Vertice *Grafo::getVertice(int id)
+{
+    Vertice *auxVertice = primeiro;
+    while(auxVertice!=NULL){
+        if(auxVertice->getId()==id)
+            break;
+        auxVertice = auxVertice->getProx();
+    }
+    return auxVertice;
+}
+
+void Grafo::adicionaAresta(int id1, int id2, bool direcionado)
+{
+    if(!existeVertice(id1))
+        adicionaVertice(id1);
+    if(!existeVertice(id2))
+        adicionaVertice(id2);
+    Vertice *no1 = getVertice(id1);
+    Vertice *no2 = getVertice(id2);
+
+
+    Aresta *nova1 = new Aresta();
+    nova1->setIdVerticeAdj(id2);
+    nova1->setIdVerticeOrigem(id1);
+    nova1->setEnderecoVerticeAdj(no2);
+    nova1->setProx(NULL);
+
+    Aresta *auxAresta = no1->getArestaAdj();
+    if(auxAresta == NULL){
+        no1->setArestaAdj(nova1);
+    }
+    else{
+        while(auxAresta->getProx()!=NULL)
+            auxAresta = auxAresta->getProx();
+        auxAresta->setProx(nova1);
+    }
+
+    if(!direcionado){
+
+        Aresta *nova2 = new Aresta();
+        nova2->setIdVerticeAdj(id1);
+        nova2->setIdVerticeOrigem(id2);
+        nova2->setEnderecoVerticeAdj(no1);
+        nova2->setProx(NULL);
+        auxAresta = no2->getArestaAdj();
+        if(auxAresta == NULL){
+            no2->setArestaAdj(nova2);
+        }
+        else{
+            while(auxAresta->getProx() != NULL)
+                auxAresta = auxAresta->getProx();
+            auxAresta->setProx(nova2);
+        }
+    }
+    if(direcionado){
+        no1->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
+    else{
+        no1->aumentaGrauSaida();
+        no1->aumentaGrauEntrada();
+        no2->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
+}
+
+void Grafo::adicionaAresta(int id1, int id2, float peso, bool direcionado)
+{
+    if(!existeVertice(id1))
+        adicionaVertice(id1);
+    if(!existeVertice(id2))
+        adicionaVertice(id2);
+    Vertice *no1 = getVertice(id1);
+    Vertice *no2 = getVertice(id2);
+
+    Aresta *nova1 = new Aresta();
+    nova1->setIdVerticeAdj(id2);
+    nova1->setIdVerticeOrigem(id1);
+    nova1->setEnderecoVerticeAdj(no2);
+    nova1->setProx(NULL);
+    nova1->setPeso(peso);
+
+    Aresta *auxAresta = no1->getArestaAdj();
+    if(auxAresta == NULL){
+        no1->setArestaAdj(nova1);
+    }
+    else{
+        while(auxAresta->getProx()!=NULL)
+            auxAresta = auxAresta->getProx();
+        auxAresta->setProx(nova1);
+    }
+    if(!direcionado){
+        Aresta *nova2 = new Aresta();
+        nova2->setIdVerticeAdj(id1);
+        nova2->setIdVerticeOrigem(id2);
+        nova2->setEnderecoVerticeAdj(no1);
+        nova2->setProx(NULL);
+        nova2->setPeso(peso);
+        auxAresta = no2->getArestaAdj();
+        if(auxAresta == NULL){
+            no2->setArestaAdj(nova2);
+        }
+        else{
+            while(auxAresta->getProx() != NULL)
+                auxAresta = auxAresta->getProx();
+            auxAresta->setProx(nova2);
+        }
+    }
+    if(direcionado){
+        no1->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
+    else{
+        no1->aumentaGrauSaida();
+        no1->aumentaGrauEntrada();
+        no2->aumentaGrauSaida();
+        no2->aumentaGrauEntrada();
+    }
+}
+
+
+void Grafo::removeAresta(int id1, int id2, bool direcionado)
+{
+    if(existeVertice(id1) && existeVertice(id2)){
+        Vertice *auxVertice1 = getVertice(id1);
+        Aresta *atual = auxVertice1->getArestaAdj();
+        Aresta *anterior = NULL;
+        while(atual!=NULL && atual->getIdVerticeAdj()!=id2){
+            anterior = atual;
+            atual = atual->getProx();
+        }
+        if(atual!=NULL){
+            if(anterior!=NULL){
+                anterior->setProx(atual->getProx());
+            }
+            else{
+                auxVertice1->setArestaAdj(atual->getProx());
+            }
+            delete atual;
+            atual = NULL;
+        }
+        Vertice *auxVertice2 = getVertice(id2);
+        if(!direcionado){
+            atual = auxVertice2->getArestaAdj();
+            anterior = NULL;
+            while(atual!=NULL && atual->getIdVerticeAdj()!=id1){
+                anterior = atual;
+                atual = atual->getProx();
+            }
+            if(atual!=NULL){
+                if(anterior!=NULL){
+                    anterior->setProx(atual->getProx());
+                }
+                else{
+                    auxVertice2->setArestaAdj(atual->getProx());
+                }
+                delete atual;
+                atual = NULL;
+            }
+        }
+        if(direcionado){
+            auxVertice1->diminuiGrauSaida();
+            auxVertice2->diminuiGrauEntrada();
+        }
+        else{
+            auxVertice1->diminuiGrauSaida();
+            auxVertice2->diminuiGrauEntrada();
+            auxVertice1->diminuiGrauEntrada();
+            auxVertice2->diminuiGrauSaida();
+        }
+    }
+}
+
+void Grafo::removeVertice(int id, bool direcionado)
+{
+    if(!grafoVazio() && existeVertice(id)){
+        Vertice *auxVertice = primeiro;
+        Aresta *auxAresta;
+        while(auxVertice!=NULL){
+            auxAresta = auxVertice->getArestaAdj();
+            while(auxAresta!=NULL){
+                if(auxAresta->getIdVerticeAdj()==id)
+                    removeAresta(auxAresta->getIdVerticeOrigem(), auxAresta->getIdVerticeAdj(), direcionado);
+                auxAresta = auxAresta->getProx();
+            }
+            auxVertice = auxVertice->getProx();
+        }
+        auxVertice = primeiro;
+        Vertice *anterior = NULL;
+        while(auxVertice->getId()!=id){
+            anterior = auxVertice;
+            auxVertice = auxVertice->getProx();
+        }
+        if(anterior==NULL)
+            primeiro = auxVertice->getProx();
+        else{
+            anterior->setProx(auxVertice->getProx());
+        }
+        delete auxVertice;
+        auxVertice = NULL;
+        delete anterior;
+        if(id<ordemGrafo && verticesNoGrafo!=NULL)
+            verticesNoGrafo[id] = false;
+        diminuiOrdem();
+    }
+}
+
+
+
+void Grafo::vizinhancaAberta(int id)
+{
+    Vertice *auxVertice = getVertice(id);
+    if(auxVertice!=NULL){
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        cout << "[ ";
+        while(auxAresta!=NULL){
+            cout << auxAresta->getIdVerticeAdj() << ", ";
+            auxAresta = auxAresta->getProx();
+        }
+        cout << "]" <<endl;
+    }
+}
+
+void Grafo::vizinhancaFechada(int id)
+{
+    Vertice *auxVertice = getVertice(id);
+    if(auxVertice!=NULL){
+        Aresta *auxAresta = auxVertice->getArestaAdj();
+        cout << "[ " << auxVertice->getId() << ", ";
+        while(auxAresta!=NULL){
+            cout << auxAresta->getIdVerticeAdj() << ", ";
+            auxAresta = auxAresta->getProx();
+        }
+        cout << "]" <<endl;
+    }
+}
+
+
+
+
+
+
+
+
 
 void Grafo::apagarGrafo()
 {
@@ -69,6 +378,8 @@ bool Grafo::existeVertice(string nome)
         return false;
     return true;
 }
+
+
 
 Vertice *Grafo::getVertice(string nome)
 {
@@ -115,32 +426,27 @@ void Grafo::adicionaAresta(string nome1, string nome2, bool direcionado)
     Vertice *no1 = getVertice(nome1);
     Vertice *no2 = getVertice(nome2);
 
-
     Aresta *nova1 = new Aresta();
     nova1->setVerticeAdj(nome2);
     nova1->setNomeOrigem(nome1);
     nova1->setEnderecoVerticeAdj(no2);
     nova1->setProx(NULL);
 
-
     Aresta *aux = no1->getArestaAdj();
     if(aux == NULL){
         no1->setArestaAdj(nova1);
-
     }
     else{
         while(aux->getProx()!=NULL)
             aux = aux->getProx();
         aux->setProx(nova1);
     }
-
     if(!direcionado){
         Aresta *nova2 = new Aresta();
         nova2->setVerticeAdj(nome1);
         nova2->setNomeOrigem(nome2);
         nova2->setEnderecoVerticeAdj(no1);
         nova2->setProx(NULL);
-
         aux = no2->getArestaAdj();
         if(aux == NULL){
             no2->setArestaAdj(nova2);
@@ -330,15 +636,29 @@ void Grafo::removeVertice(string nome, bool direcionado)
 void Grafo::listaAdjacencia()
 {
     Vertice *auxVertice = primeiro;
-    while(auxVertice!=NULL){
-        Aresta *auxAresta = auxVertice->getArestaAdj();
-        cout << auxVertice->getNome() << " -> ";
-        while(auxAresta!=NULL){
-            cout << auxAresta->getVerticeAdj() << " -> ";
-            auxAresta = auxAresta->getProx();
+    if(!usaId){
+        while(auxVertice!=NULL){
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            cout << auxVertice->getNome() << " -> ";
+            while(auxAresta!=NULL){
+                cout << auxAresta->getVerticeAdj() << " -> ";
+                auxAresta = auxAresta->getProx();
+            }
+            cout << "||" << endl;
+            auxVertice = auxVertice->getProx();
         }
-        cout << "||" << endl;
-        auxVertice = auxVertice->getProx();
+    }
+    else{
+        while(auxVertice!=NULL){
+            Aresta *auxAresta = auxVertice->getArestaAdj();
+            cout << auxVertice->getId() << " -> ";
+            while(auxAresta!=NULL){
+                cout << auxAresta->getIdVerticeAdj() << " -> ";
+                auxAresta = auxAresta->getProx();
+            }
+            cout << "||" << endl;
+            auxVertice = auxVertice->getProx();
+        }
     }
 }
 
@@ -365,9 +685,6 @@ void Grafo::grauVertice(string nome, bool direcionado)
 bool Grafo::K_Regularidade(int k)
 {
     if(!grafoVazio()){
-        if(primeiro==NULL){
-            return false;
-        }
         Vertice *auxVertice = primeiro;
         while(auxVertice!=NULL){
             if(auxVertice->getGrauEntrada() != k)
@@ -499,7 +816,7 @@ bool Grafo::grafoBipartido()
         pilha.push(verticeAux->getNome());
         int index;
         while(!pilha.empty()){
-            index = getIndex(nomes, verticeAux->getNome());
+            index = getIndex(getIndex(nomes, verticeAux->getNome());
             if(verificado[index]==0){
                 verificado[index] = 1;
                 coloracao[index]  = cor;
@@ -709,6 +1026,7 @@ void Grafo::arvoreGeradoraMinimaKruskal()
 {
 
     if(!grafoVazio()){
+        bool *verticesNaSolucao = new bool[ordemGrafo];
         Vertice *auxVertice = primeiro;
         list<Aresta> *arestas = new list<Aresta>;
         while(auxVertice!=NULL){
@@ -719,8 +1037,10 @@ void Grafo::arvoreGeradoraMinimaKruskal()
             }
             auxVertice = auxVertice->getProx();
         }
-
-        arestas = ordernarArestasPorPesoDecrescente(arestas);
+        double tempoInicial = clock();
+        arestas = ordernarArestasPorPesoCrescente(arestas);
+        double tempoFinal= clock();
+        cout << "Tempo decorrido:  " << (double)(tempoFinal-tempoInicial)/CLOCKS_PER_SEC << endl;
         int *parent = new int[ordemGrafo];
         auxVertice = primeiro;
         for(int i=0; i<ordemGrafo; i++){
@@ -732,25 +1052,20 @@ void Grafo::arvoreGeradoraMinimaKruskal()
         list<Aresta> solucao;
 
         int e = 0;
-
-
         while(e<ordemGrafo-1){
-
             it = arestas->begin();
-            //cout << "Verificando aresta " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
             int index1 = getIndex(nomes, it->getNomeOrigem());
             int index2 = getIndex(nomes, it->getVerticeAdj());
-            //cout << "Indexes: " << index1 << "  " << index2 << endl;
+            double tempoInicial = clock();
             int x = Find(parent, index1, 0);
+            double tempoFinal= clock();
+            //cout << "Tempo decorrido:  " << (double)(tempoFinal-tempoInicial)/CLOCKS_PER_SEC << endl;
             int y = Find(parent, index2, 0);
-            //cout << "X: " << x << "  Y: " << y << endl;
             if(x!=y){
-                //cout << "Adicionando aresta " << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << endl;
                 solucao.push_back(*it);
                 Union(parent, x, y);
                 e++;
             }
-            //cout << endl;
             arestas->pop_front();
         }
         float peso = 0;
@@ -758,8 +1073,7 @@ void Grafo::arvoreGeradoraMinimaKruskal()
             cout << it->getNomeOrigem() << " -> " << it->getVerticeAdj() << "  (" << it->getPeso() << ")"  << endl;
             peso += it->getPeso();
         }
-        cout << endl << "Soma dos pesos: " << peso << endl;
-
+        cout << endl << "Soma dos pesos: " << peso << "  numero de vertices na solucao: " << solucao.size() << endl;
 
     }
 
@@ -831,7 +1145,7 @@ bool Grafo::contemAresta(string origem, string destino, list<Aresta> *arestas)
     return false;
 }
 
-list<Aresta> *Grafo::ordernarArestasPorPesoDecrescente(list<Aresta> *arestas)
+list<Aresta> *Grafo::ordernarArestasPorPesoCrescente(list<Aresta> *arestas)
 {
 
     list<Aresta>::iterator it1;
@@ -841,7 +1155,7 @@ list<Aresta> *Grafo::ordernarArestasPorPesoDecrescente(list<Aresta> *arestas)
         for(it2 = arestas->begin(); it2!=arestas->end(); it2++){
             if(it2->getPeso()>it1->getPeso()){
                 Aresta auxAresta = *it2;
-                //cout << auxAresta.getPeso() << " ";
+                //cout << it2->getPeso() << " ";
                 *it2 = *it1;
                 *it1 = auxAresta;
             }
@@ -1119,7 +1433,7 @@ Aresta *Grafo::getMelhorAresta(list<string> *verticesNaSolucao, bool *visitados,
             auxAresta = auxAresta->getProx();
         }
     }
-    arestasCandidatas = ordernarArestasPorPesoDecrescente(arestasCandidatas);
+    arestasCandidatas = ordernarArestasPorPesoCrescente(arestasCandidatas);
     list<Aresta>::iterator it2;
     it2 = arestasCandidatas->begin();
     //cout << endl << "Arestas candidatas: " << endl;
@@ -1371,6 +1685,29 @@ if(true){
 
     }*/}
 }
+
+void Grafo::teste()
+{
+    Vertice *auxVertice;
+    double tempoInicial = clock();
+    auxVertice = primeiro;
+    int i=0;
+    while(auxVertice!=NULL){
+        i++;
+        auxVertice = auxVertice->getProx();
+    }
+    double tempoFinal = clock();
+    cout << "Tempo decorrido:  " << (double)(tempoFinal-tempoInicial)/CLOCKS_PER_SEC << endl;
+
+    int *vertices = new int[ordemGrafo];
+    tempoInicial = clock();
+    for(int j=0; j<ordemGrafo; j++){
+        int i = vertices[j];
+    }
+    tempoFinal = clock();
+    cout << "Tempo decorrido:  " << (double)(tempoFinal-tempoInicial)/CLOCKS_PER_SEC << endl;
+}
+
 
 void Grafo::caminhoMinimoDijkstra(string vertice1)
 {
@@ -1648,6 +1985,7 @@ void Grafo::fechoTransitivoIndireto(string nome, bool direcionado)
 void Grafo::conjuntoMaximoIndependenteGuloso()
 {
     if(!grafoVazio()){
+        double tInicio = clock();
         list<Vertice> *vertices = new list<Vertice>;
         list<Vertice> *solucao = new list<Vertice>;
         list<Vertice>::iterator it;
@@ -1667,9 +2005,15 @@ void Grafo::conjuntoMaximoIndependenteGuloso()
         }
         cout << endl;
         list<string>::iterator it2;
+        double tFinal = clock();
+        double tDecorrido = ((double)(tFinal - tInicio))/CLOCKS_PER_SEC;
+        cout << "Tempo decorrido: " << tDecorrido << endl;
         for(it=solucao->begin(); it!=solucao->end(); it++)
             cout << it->getNome() << "  ";
-        cout << endl << endl;
+        cout << endl << "Tamanho da solucao: " << solucao->size() << endl;
+        delete solucao;
+        delete vertices;
+        auxVertice = NULL;
     }
 }
 
@@ -1708,21 +2052,42 @@ bool Grafo::verticesVizinhos(list<Vertice> *solucao, Vertice *v)
 void Grafo::conjuntoMaximoIndependenteGulosoRandomizado(int intMax, float alpha)
 {
     if(!grafoVazio()){
+        clock_t tempoInicialSolucao;
+        clock_t tempoFinalSolucao;
+        clock_t tempoInicialAlgoritmo;
+        clock_t tempoFinalAlgoritmo;
+        tempoInicialAlgoritmo = clock();
+
+
         ofstream file;
         file.open("gulosoRandomizado.txt");
         srand (time(NULL));
+
+        bool *verticesNaSolucao = new bool[ordemGrafo];
+        for(int i=0; i<ordemGrafo; i++){
+            verticesNaSolucao[i] = false;
+        }
+
         list<Vertice> *solucao = new list<Vertice>;
         list<Vertice> *candidatos = new list<Vertice>;
+
+        list<Vertice> *verticesOrdenados = new list<Vertice>;
+        verticesOrdenados = possiveisAdicionarIndependente(solucao, verticesNaSolucao);
+        verticesOrdenados = ordenaGrauDecrescente(verticesOrdenados);
+
         Vertice *auxVertice;
         float alfa[3] = {0.1, 0.2, 0.3};
         list<Vertice>::iterator it;
+        int melhor = 0;
         for(int p=0;p<3; p++){
             file << "ALFA " << alfa[p] << "\n\n";
-            for(int m=0; m<20; m++){
-                candidatos = possiveisAdicionarIndependente(solucao);
-                candidatos = ordenaGrauDecrescente(candidatos);
-                int contador = 0;
-                while(contador<intMax && !candidatos->empty()){
+            int contador = 0;
+            while(contador<intMax){
+                tempoInicialSolucao = clock();
+                *candidatos = *verticesOrdenados;
+                //cout << "Tempo decorrido: " << (double)(tempoFinal-tempoInicial)/CLOCKS_PER_SEC << endl;
+                while(candidatos->size() != 0){
+                    //cout << "Tamanho lista de candidatos: " << candidatos->size() << endl;
                     int n = ceil(candidatos->size()*alfa[p]);
                     int random = rand()%n;
                     it = candidatos->begin();
@@ -1730,19 +2095,51 @@ void Grafo::conjuntoMaximoIndependenteGulosoRandomizado(int intMax, float alpha)
                         it++;
                     auxVertice = &(*it);
 
+                    //candidatos->pop_front();
+
+                    //cout << "Vertice escolhido: " << auxVertice->getNome() << "  grau do vertice: " << auxVertice->getGrauEntrada() << endl;
+
                     solucao->push_back(*auxVertice);
-                    candidatos = possiveisAdicionarIndependente(solucao);
-                    candidatos = ordenaGrauDecrescente(candidatos);
-                    contador++;
+
+
+
+                    //salvar index dos vertices da solucao
+                    //int index = getIndex(nomes, auxVertice->getNome());
+                    //verticesNaSolucao[index] = true;
+
+                    removeVerticesAdjacentes(candidatos, auxVertice->getNome(), auxVertice->getGrauEntrada());
+
+                    //candidatos = possiveisAdicionarIndependente(solucao, verticesNaSolucao);
+                    //candidatos = ordenaGrauDecrescente(candidatos);
 
                 }
-
-                file << "Execucao " << m+1 << "\n\t";
+                contador++;
+                cout << endl << "Tamanho da solucao encontrada: " << solucao->size() << endl;
+                if(solucao->size()>melhor){
+                    melhor = solucao->size();
+                }
+                tempoFinalSolucao = clock();
+                cout << "contador: " << contador << endl;
                 this->imprimirSolucao(solucao, &file);
+                file << "\tTamanho da solucao encontrada; " << solucao->size() << endl;
+                file << "\tTempo decorrido: " << (double)(tempoFinalSolucao-tempoInicialSolucao)/CLOCKS_PER_SEC<< "\n\n";
+                cout << "Tempo decorrido para achar solucao: " << (double)(tempoFinalSolucao-tempoInicialSolucao)/CLOCKS_PER_SEC << endl;
                 solucao->clear();
                 candidatos->clear();
             }
+
+
+            //cout << "Numero de repeticoes: " << contador << endl;
+
+            //cout << "Execucao " << m+1 << "\n";
+
+
         }
+        tempoFinalAlgoritmo = clock();
+        cout << "Melhor:  " << melhor << endl;
+        cout << "Tempo decorrido para algoritmo: " << (double)(tempoFinalAlgoritmo - tempoInicialAlgoritmo)/CLOCKS_PER_SEC << endl;
+        file << "Tamanho do melhor conjunto independente achado: " << melhor;
+        file << "\nTempo para execucao do algoritmo: " << (double)(tempoFinalAlgoritmo - tempoInicialAlgoritmo)/CLOCKS_PER_SEC;
         delete solucao;
     }
 }
@@ -1751,26 +2148,242 @@ void Grafo::imprimirSolucao(list<Vertice> *solucao, ofstream *file)
 {
     if(!solucao->empty()){
         list<Vertice>::iterator it;
-
+        *file << "\t";
 
         for(it=solucao->begin(); it!=solucao->end(); it++){
             *file << it->getNome() << "  ";
         }
-        *file << "\n\n";
+        *file << "\n";
     }
 }
 
-list<Vertice> *Grafo::possiveisAdicionarIndependente(list<Vertice> *conjuntoSolucao)
+void Grafo::removeVerticesAdjacentes(list<Vertice> *candidatos, string verticeAdicionado, int vizinhos)
+{
+    //cout << "Removendo vertices" << endl;
+    string *verticesParaExcluir = new string[vizinhos+1];
+
+
+    Aresta *auxAresta = getVertice(verticeAdicionado)->getArestaAdj();
+    int n=0;
+    while(auxAresta!=NULL){
+        verticesParaExcluir[n] = auxAresta->getVerticeAdj();
+        auxAresta = auxAresta->getProx();
+        n++;
+    }
+
+    verticesParaExcluir[n] = verticeAdicionado;
+    n++;
+
+
+
+    int a = 0;
+    //cout << "N:  " << n << endl;
+    list<Vertice>::iterator it = candidatos->begin();
+    while(it!=candidatos->end()){
+        //cout << "Teste1" << endl;
+        for(int i=0; i<n; i++){
+            if(it->getNome()==verticesParaExcluir[i]){
+                it = candidatos->erase(it);
+                it--;
+                a++;
+                break;
+            }
+        }
+        //cout << "Teste2" << endl;
+        it++;
+    }
+    //cout << "A:  " << a << endl;
+    delete []verticesParaExcluir;
+
+}
+
+list<Vertice> *Grafo::possiveisAdicionarIndependente(list<Vertice> *conjuntoSolucao, bool *verticesNaSolucao)
 {
     list<Vertice> *candidatos = new list<Vertice>;
     list<Vertice>::iterator it1;
     list<Vertice>::iterator it2;
+    int index;
     Vertice *auxVertice = primeiro;
     while(auxVertice!=NULL){
-        if(!verticesVizinhos(conjuntoSolucao, auxVertice))
-            candidatos->push_back(*auxVertice);
+        index = getIndex(nomes, auxVertice->getNome());
+        if(!verticesNaSolucao[index]){
+            if(!verticesVizinhos(conjuntoSolucao, auxVertice))
+                candidatos->push_back(*auxVertice);
+        }
         auxVertice = auxVertice->getProx();
     }
     return candidatos;
 
+}
+
+void Grafo::conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax)
+{
+    clock_t tempoInicialSolucao;
+    clock_t tempoInicialAlgoritmo;
+    clock_t tempoFinalSolucao;
+    clock_t tempoFinalAlgoritmo;
+    tempoInicialAlgoritmo = clock();
+
+    clock_t tInicial;
+    clock_t tFinal;
+
+    ofstream file;
+    file.open("gulosoRandomizadoReativo.txt");
+
+
+    srand(time(NULL));
+    float *alfa = new float[10];
+    float *probabilidades = new float[10];
+    bool *verticesNaSolucao = new bool[ordemGrafo];
+    for(int i=0; i<10; i++){
+        probabilidades[i] = 1/10.0;
+        alfa[i] = i*0.05 +0.05;
+        cout << alfa[i] << "  ";
+    }
+    cout << endl;
+    for(int i=0; i<10; i++){
+        cout << probabilidades[i] << "  ";
+    }
+    for(int i=0; i<ordemGrafo; i++){
+        verticesNaSolucao[i] = false;
+    }
+    cout << endl;
+    list<Vertice> *solucao = new list<Vertice>;
+    list<Vertice> *candidatos = new list<Vertice>;
+    list<Vertice>::iterator it;
+    int contador = 0;
+
+    list<Vertice> *verticesOrdenados = new list<Vertice>;
+    verticesOrdenados = possiveisAdicionarIndependente(solucao, verticesNaSolucao);
+    verticesOrdenados = ordenaGrauDecrescente(verticesOrdenados);
+
+
+
+    int contadorAlfa[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    float mediaAlfa[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    int melhor = 0;
+    while(contador<intMax){
+        tempoInicialSolucao = clock();
+        int x = rand()%1000;
+        //cout << "X: " << x << "  " << endl;
+        float c = probabilidades[0]*1000.0;
+        int i = 0;
+        while(c<=x){
+            //cout << "C:  " << c << "  I:  " << i << endl;
+            i++;
+            c += probabilidades[i]*1000;
+        }
+
+        //cout << "I:  " << i << endl;
+
+        contadorAlfa[i] = contadorAlfa[i] +1;
+        //cout << "C: " << c << "  Alfa: " << alfa[i] << endl;
+        tInicial = clock();
+        *candidatos = *verticesOrdenados;
+        tFinal = clock();
+        cout << "Operacao de ponteiros tempo: " << (double)(tFinal-tInicial)/CLOCKS_PER_SEC << endl;
+
+
+        /*
+        tInicial = clock();
+        candidatos = possiveisAdicionarIndependente(solucao, verticesNaSolucao);
+        tFinal = clock();
+        cout << "Possiveis adicionar tempo: " << (double)(tFinal-tInicial)/CLOCKS_PER_SEC << endl;
+        tInicial = clock();
+        candidatos = ordenaGrauDecrescente(candidatos);
+        tFinal = clock();
+        cout << "ordena grau decrescente tempo: " << (double)(tFinal-tInicial)/CLOCKS_PER_SEC << endl;
+        */
+        int y = 0;
+        while(candidatos->size()!=0){
+            //cout << endl << "Tamanho de candidatos: " << candidatos->size() << endl;
+            int n = ceil(candidatos->size()*alfa[i]);
+            //cout << "N esoclhido: " << n << endl;
+            x = rand()%n;
+            it = candidatos->begin();
+            for(int j=0; j<x; j++)
+                it++;
+            Vertice *auxVertice = &(*it);
+            //cout << "Vertice escolhido:  " << auxVertice->getNome() << endl;
+            solucao->push_back(*auxVertice);
+            tInicial = clock();
+            removeVerticesAdjacentes(candidatos, auxVertice->getNome(), auxVertice->getGrauEntrada());
+            tFinal = clock();
+            cout << "remove adjacentes tempo: " << (double)(tFinal-tInicial)/CLOCKS_PER_SEC << endl;
+            y++;
+        }
+        cout << "Y: " << y << endl;
+        //cout << "Tamanho da solucao: " << solucao->size() << endl;
+        for(it=solucao->begin(); it!=solucao->end(); it++){
+            //cout << it->getNome() << "  ";
+        }
+        //cout << endl;
+        contador++;
+        cout << "Contador: " << contador << endl;
+        mediaAlfa[i] = mediaAlfa[i]+solucao->size();
+
+//        cout << "Melhor: " << melhor << endl ;
+
+        if(contador%50==0){
+            float q[10];
+            float somatorioQ = 0.0;
+            for(int i=0; i<10; i++){
+                //cout << "Divisao de " << mediaAlfa[i] << "  por " << contadorAlfa[i] << endl;
+                if(contadorAlfa[i]==0){
+                    mediaAlfa[i] = 0.00001;
+                    q[i] = 0;
+                }
+                else{
+                    mediaAlfa[i] = mediaAlfa[i]/contadorAlfa[i];
+                    //cout << "Resultado:  " << mediaAlfa[i] << endl << endl;
+                    q[i] = pow((melhor/mediaAlfa[i]), 10);
+                }
+                //cout << "Melhor: " << melhor << endl;
+                somatorioQ += q[i];
+            }
+            //cout << "Valores de Q:" << endl;
+            for(int i=0; i<10; i++){
+               // cout << q[i] << "  ";
+            }
+            //cout << endl << "Somatorio Q:  " << somatorioQ << endl;
+            for(int i=0; i<10; i++){
+                probabilidades[i] = q[i]/somatorioQ;
+                mediaAlfa[i] = 0;
+                contadorAlfa[i] = 0;
+            }
+            //cout <<  endl << "Novos valores de probabilidades: " << endl;
+            float p = 0;
+            for(int i=0; i<10; i++){
+                //cout << probabilidades[i] << "  ";
+                p += probabilidades[i];
+            }
+            //cout << endl << "Valores da probabilidade 9 primeiros x 1000:" << endl;
+            float somatorio = 0;
+            for(int i=0; i<10; i++){
+                //cout << probabilidades[i]*1000 << "  ";
+            //    if(i<9)
+              //      somatorio += probabilidades[i]*1000;
+            }
+            //cout << endl << "Somatorio das probabilidades x1000: " << somatorio << endl;
+            //cout << endl << "Somatorio das probabilidades: " << p << endl;
+        }
+        //Fim contador
+        if(solucao->size()>melhor){
+            melhor = solucao->size();
+        }
+        tempoFinalSolucao = clock();
+        cout << "Tamanho da solucao encontrada: " << solucao->size() << endl;
+        cout << "Tempo de execucao da solucao: " << (double)(tempoFinalSolucao- tempoInicialSolucao)/CLOCKS_PER_SEC << endl << endl;
+        imprimirSolucao(solucao, &file);
+        file << "\tTamanho da solucao encontrada: " << solucao->size() << endl;
+        file << "\tTempo decorrido: " << (double)(tempoFinalSolucao-tempoInicialSolucao)/CLOCKS_PER_SEC<< "\n\n";
+        solucao->clear();
+        candidatos->clear();
+    }
+    tempoFinalAlgoritmo = clock();
+    cout << "Melhor: " << melhor << endl ;
+    cout << "Tempo de execucao do algoritmo: " << (double)(tempoFinalAlgoritmo - tempoInicialAlgoritmo)/CLOCKS_PER_SEC << endl << endl;
+    file << "Tamanho do melhor conjunto independente achado: " << melhor;
+    file << "\nTempo para execucao do algoritmo: " << (double)(tempoFinalAlgoritmo - tempoInicialAlgoritmo)/CLOCKS_PER_SEC;
 }

@@ -85,7 +85,15 @@ void Vertice::diminuiGrauSaida()
     grauSaida--;
 }
 
+void Vertice::setId(int id)
+{
+    this->id = id;
+}
 
+int Vertice::getId()
+{
+    return this->id;
+}
 
 
 

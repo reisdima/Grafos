@@ -19,6 +19,12 @@ public:
     void setEnderecoVerticeAdj(Vertice *adjacente);
     void setNomeOrigem(string nome);
 
+    void setIdVerticeOrigem(int id);
+    void setIdVerticeAdj(int id);
+
+    int getIdVerticeOrigem();
+    int getIdVerticeAdj();
+
     float getPeso();
     string getNomeOrigem();
     string getVerticeAdj();
@@ -26,6 +32,9 @@ public:
     Vertice *getEnderecoVerticeAdj();
 
 private:
+    int idVerticeOrigem;
+    int idVerticeAdj;
+
     string verticeOrigem;
     float peso;
     Aresta *prox;
