@@ -54,11 +54,10 @@ public:
     void apagarGrafo();
 
     void conjuntoMaximoIndependenteGuloso();
-    void conjuntoMaximoIndependenteGulosoRandomizado(int intMax, float alpha);
+    void conjuntoMaximoIndependenteGulosoRandomizado(int intMax);
     void conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax);
 
     void numeroVertices(int n);
-    void teste();
 
 private:
     bool usaId;
@@ -68,7 +67,7 @@ private:
 
 
 
-    string *ids;
+
 
     list<string> *nomes;
 
@@ -85,7 +84,6 @@ private:
     bool contemAresta(string origem, string destino, list<Aresta> *arestas);
     list<Aresta> *ordernarArestasPorPesoCrescente(list<Aresta> *arestas);
     bool formaCiclo(list<Aresta> *solucao, Aresta *aresta);
-    bool formaCiclo(bool *solucao, Aresta *aresta, int tamanho, int index1, int index2);
     int distanciaMinima(int dist[], bool sptSet[]);
     list<Vertice> *ordenaGrauDecrescente(list<Vertice> *vertices);
     bool verticesVizinhos(list<Vertice> *solucao, Vertice *v);

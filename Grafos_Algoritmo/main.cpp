@@ -13,7 +13,7 @@ using namespace std;
 void leituraDeArquivo(string nomeArquivo, Grafo *G, bool direcionado)
 {
     //ifstream file("grafo_1000_1.txt");
-    ifstream file("Teste1.txt");
+    ifstream file("Instancias\\grafo_125.txt");
     int n;
     string nome1, nome2;
     //int id1, id2;
@@ -24,12 +24,12 @@ void leituraDeArquivo(string nomeArquivo, Grafo *G, bool direcionado)
     if(file.is_open()){
         file >> n;
         //G->numeroVertices(n);
-        while(file >> nome1 >> nome2){
+        while(file >> nome1 >> nome2 >> peso){
             //ss << nome1;
             //ss >> id1;
             //ss << nome2;
             //ss >> id2;
-            G->adicionaAresta(nome1, nome2, direcionado);
+            G->adicionaAresta(nome1, nome2, peso, direcionado);
         }
         tempoFinal = clock();
     }
@@ -224,7 +224,7 @@ int main(int args, char *arqv[])
                 G.conjuntoMaximoIndependenteGuloso();
             }
             else if(escolha==21){
-                G.conjuntoMaximoIndependenteGulosoRandomizado(500, 0.5);
+                G.conjuntoMaximoIndependenteGulosoRandomizado(500);
             }
             else if(escolha==22){
                 if(G.existeCiclo())
@@ -235,9 +235,7 @@ int main(int args, char *arqv[])
             else if(escolha==23){
                 G.conjuntoMaximoIndependenteGulosoRandomizadoReativo(500);
             }
-            else if(escolha==24){
-                G.teste();
-            }
+
             else if(escolha==0)
                 break;
         }
