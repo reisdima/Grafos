@@ -12,7 +12,7 @@ using namespace std;
 
 void leituraDeArquivoSemPeso(string arquivoEntrada, Grafo *G, bool direcionado)
 {
-    string filename = "Instancias\\"+arquivoEntrada;
+    string filename = arquivoEntrada;
     ifstream file(filename.c_str());
     int n;
     string nome1, nome2;
@@ -30,7 +30,7 @@ void leituraDeArquivoSemPeso(string arquivoEntrada, Grafo *G, bool direcionado)
 
 void leituraDeArquivoComPeso(string arquivoEntrada, Grafo *G, bool direcionado)
 {
-    string filename = "Instancias\\"+arquivoEntrada;
+    string filename = arquivoEntrada;
     ifstream file(filename.c_str());
     int n;
     string nome1, nome2;
@@ -84,12 +84,13 @@ int main(int args, char *arqv[])
     string arquivoSaida;
     bool direcionado = false;
     bool ponderadoAresta = false;
-    //arquivoEntrada = arqv[1];
-    //arquivoSaida = arqv[2];
+    arquivoEntrada = arqv[1];
+    arquivoSaida = arqv[2];
     //ponderadoAresta = argv[3];
-    arquivoEntrada = "grafo_125.txt";
     leituraDeArquivoSemPeso(arquivoEntrada, &G, direcionado);
     G.setArquivoSaida(arquivoSaida);
+
+
 
 
 

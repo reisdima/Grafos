@@ -1480,7 +1480,7 @@ void Grafo::conjuntoMaximoIndependenteGulosoRandomizado(int intMax)
                 tempoFinalSolucao = clock();
                 cout << "contador: " << contador << endl;
                 this->imprimirSolucao(solucao, &file);
-                file << "\tTamanho da solucao encontrada; " << solucao->size() << endl;
+                file << "\tTamanho da solucao encontrada: " << solucao->size() << endl;
                 file << "\tTempo decorrido: " << (double)(tempoFinalSolucao-tempoInicialSolucao)/CLOCKS_PER_SEC<< "\n\n";
                 cout << "Tempo decorrido para achar solucao: " << (double)(tempoFinalSolucao-tempoInicialSolucao)/CLOCKS_PER_SEC << endl;
                 solucao->clear();
@@ -1596,9 +1596,6 @@ void Grafo::conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax)
     clock_t tempoFinalAlgoritmo;
     tempoInicialAlgoritmo = clock();
 
-    clock_t tInicial;
-    clock_t tFinal;
-
     ofstream file;
     file.open(arquivoSaida.c_str());
 
@@ -1644,9 +1641,9 @@ void Grafo::conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax)
             i++;
             c += probabilidades[i]*1000;
         }
+        *candidatos = *verticesOrdenados;
 
         contadorAlfa[i] = contadorAlfa[i] +1;
-        int y = 0;
         while(candidatos->size()!=0){
             int n = ceil(candidatos->size()*alfa[i]);
             x = rand()%n;
@@ -1655,15 +1652,10 @@ void Grafo::conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax)
                 it++;
             Vertice *auxVertice = &(*it);
             solucao->push_back(*auxVertice);
-            tInicial = clock();
             removeVerticesAdjacentes(candidatos, auxVertice->getNome(), auxVertice->getGrauEntrada());
-            tFinal = clock();
-            cout << "remove adjacentes tempo: " << (double)(tFinal-tInicial)/CLOCKS_PER_SEC << endl;
-            y++;
+
         }
-        cout << "Y: " << y << endl;
-        for(it=solucao->begin(); it!=solucao->end(); it++){
-        }
+
         contador++;
         cout << "Contador: " << contador << endl;
         mediaAlfa[i] = mediaAlfa[i]+solucao->size();
