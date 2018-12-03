@@ -969,7 +969,6 @@ bool Grafo::existeCiclo()
         }
         return false;
     }
-    return false;
 }
 
 
@@ -979,7 +978,7 @@ bool Grafo::existeCiclo()
 int Grafo::minKey(float *key, bool *verticesNaArvore)
 {
     float menor = INT_MAX;
-    int menorIndex = 0;
+    int menorIndex;
     for(int i=0; i<ordemGrafo; i++){
         if(!verticesNaArvore[i] && key[i]<menor){
             menor = key[i];
@@ -1329,12 +1328,23 @@ void Grafo::fechoTransitivoIndireto(string nome, bool direcionado)
 }
 
 /*********************************
+*Recebe uma string para ser o    *
+*destino do arquivo de saida     *
+*********************************/
+void Grafo::setArquivoSaida(string arquivoSaida)
+{
+    this->arquivoSaida = arquivoSaida;
+}
+
+/*********************************
 *Algoritmo guloso para achar     *
 *conjunto maximo independente    *
 *********************************/
 void Grafo::conjuntoMaximoIndependenteGuloso()
 {
     if(!grafoVazio()){
+        ofstream file;
+        file.open(arquivoSaida.c_str());
         double tInicio = clock();
         list<Vertice> *vertices = new list<Vertice>;
         list<Vertice> *solucao = new list<Vertice>;
@@ -1358,8 +1368,11 @@ void Grafo::conjuntoMaximoIndependenteGuloso()
         double tFinal = clock();
         double tDecorrido = ((double)(tFinal - tInicio))/CLOCKS_PER_SEC;
         cout << "Tempo decorrido: " << tDecorrido << endl;
-        for(it=solucao->begin(); it!=solucao->end(); it++)
+        file << "Tempo decorrido: " << tDecorrido << endl;
+        for(it=solucao->begin(); it!=solucao->end(); it++){
             cout << it->getNome() << "  ";
+            file << it->getNome() << "  ";
+        }
         cout << endl << "Tamanho da solucao: " << solucao->size() << endl;
         delete solucao;
         delete vertices;
@@ -1416,7 +1429,7 @@ void Grafo::conjuntoMaximoIndependenteGulosoRandomizado(int intMax)
 
 
         ofstream file;
-        file.open("gulosoRandomizado.txt");
+        file.open(arquivoSaida.c_str());
         srand (time(NULL));
 
         bool *verticesNaSolucao = new bool[ordemGrafo];
@@ -1587,7 +1600,7 @@ void Grafo::conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax)
     clock_t tFinal;
 
     ofstream file;
-    file.open("gulosoRandomizadoReativo.txt");
+    file.open(arquivoSaida.c_str());
 
 
     srand(time(NULL));

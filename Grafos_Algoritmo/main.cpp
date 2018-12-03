@@ -10,25 +10,36 @@
 
 using namespace std;
 
-void leituraDeArquivo(string nomeArquivo, Grafo *G, bool direcionado)
+void leituraDeArquivoSemPeso(string arquivoEntrada, Grafo *G, bool direcionado)
 {
-    //ifstream file("grafo_1000_1.txt");
-    ifstream file("Instancias\\grafo_125.txt");
+    string filename = "Instancias\\"+arquivoEntrada;
+    ifstream file(filename.c_str());
     int n;
     string nome1, nome2;
-    //int id1, id2;
-    //stringstream ss;
+    double tempoInicio = clock();
+    double tempoFinal;
+    if(file.is_open()){
+        file >> n;
+        while(file >> nome1 >> nome2){
+            G->adicionaAresta(nome1, nome2, direcionado);
+        }
+        tempoFinal = clock();
+    }
+    cout << "Tempo decorrido na leitura de arquivo: " << (double)(tempoFinal - tempoInicio)/CLOCKS_PER_SEC << endl << endl;
+}
+
+void leituraDeArquivoComPeso(string arquivoEntrada, Grafo *G, bool direcionado)
+{
+    string filename = "Instancias\\"+arquivoEntrada;
+    ifstream file(filename.c_str());
+    int n;
+    string nome1, nome2;
     float peso;
     double tempoInicio = clock();
     double tempoFinal;
     if(file.is_open()){
         file >> n;
-        //G->numeroVertices(n);
         while(file >> nome1 >> nome2 >> peso){
-            //ss << nome1;
-            //ss >> id1;
-            //ss << nome2;
-            //ss >> id2;
             G->adicionaAresta(nome1, nome2, peso, direcionado);
         }
         tempoFinal = clock();
@@ -57,9 +68,10 @@ void Menu()
     cout << "[17] Caminho minimo por Floyd" << endl;
     cout << "[18] Fecho transitivo direto" << endl;
     cout << "[19] Fecho transitivo indireto" << endl;
-    cout << "[20] Conjunto maximo independente guloso" << endl;
-    cout << "[21] Conjunto maximo independente guloso randomizado" << endl;
-    cout << "[22] Verifica se o grafo forma ciclo" << endl;
+    cout << "[20] Verifica se o grafo forma ciclo" << endl << endl;
+    cout << "[21] Conjunto maximo independente guloso" << endl;
+    cout << "[22] Conjunto maximo independente guloso randomizado" << endl;
+    cout << "[23] Conjunto maximo independente guloso randomizado reativo" << endl;
     cout << "[0]  Sair" << endl;
 }
 
@@ -68,45 +80,21 @@ int main(int args, char *arqv[])
 {
 
     Grafo G;
+    string arquivoEntrada;
+    string arquivoSaida;
     bool direcionado = false;
-    //string nomeArquivo = "grafo_1000_1.txt";
-    string nomeArquivo = "grafo_125.txt";
-    leituraDeArquivo(nomeArquivo, &G, direcionado);
-    ofstream fileWrite;
-    fileWrite.open("test.txt");
-    fileWrite << "Teste";
-    fileWrite.close();
-
-/*
-    cout << "O grafo sera direcionado?" << endl << endl;
-    cout << "[0] Nao" << endl << "[1] Sim" << endl;
-    cin >> direcionado;
-*/
+    bool ponderadoAresta = false;
+    //arquivoEntrada = arqv[1];
+    //arquivoSaida = arqv[2];
+    //ponderadoAresta = argv[3];
+    arquivoEntrada = "grafo_125.txt";
+    leituraDeArquivoSemPeso(arquivoEntrada, &G, direcionado);
+    G.setArquivoSaida(arquivoSaida);
 
 
-    int escolha;/*
-    cout << endl << "Como voce ira montar o grafo?" << endl;
-    cout << endl << "[1] Manualmente" << endl << "[2] Leitura de arquivo" << endl;
-    cin >> escolha;*/
-    escolha=1;
-    if(escolha==1){
-        bool ponderadoAresta;
-       /* cout << "O grafo sera ponderado nas arestas?" << endl;
-        cout << "[0] Nao" << endl << "[1] Sim" << endl;
-        cin >> ponderadoAresta;*/
-        ponderadoAresta=true;
-/*
-        G.adicionaAresta("A", "B", 7, direcionado);
-        G.adicionaAresta("A", "D", 5, direcionado);
-        G.adicionaAresta("D", "B", 9, direcionado);
-        G.adicionaAresta("D", "E", 15, direcionado);
-        G.adicionaAresta("D", "F", 6, direcionado);
-        G.adicionaAresta("F", "G", 11, direcionado);
-        G.adicionaAresta("F", "E", 8, direcionado);
-        G.adicionaAresta("B", "C", 8, direcionado);
-        G.adicionaAresta("C", "E", 5, direcionado);
-        G.adicionaAresta("E", "G", 9, direcionado);
-        G.adicionaAresta("B", "E", 7, direcionado);*/
+
+
+    int escolha;
         while(true){
             Menu();
             cin >> escolha;
@@ -221,45 +209,22 @@ int main(int args, char *arqv[])
                 G.fechoTransitivoIndireto(nome, direcionado);
             }
             else if(escolha==20){
-                G.conjuntoMaximoIndependenteGuloso();
-            }
-            else if(escolha==21){
-                G.conjuntoMaximoIndependenteGulosoRandomizado(500);
-            }
-            else if(escolha==22){
                 if(G.existeCiclo())
                     cout << "O grafo tem ciclo" << endl;
                 else
                     cout << "O grafo nao tem ciclo" << endl;
             }
+            else if(escolha==21){
+                G.conjuntoMaximoIndependenteGuloso();
+            }
+            else if(escolha==22){
+                G.conjuntoMaximoIndependenteGulosoRandomizado(500);
+            }
             else if(escolha==23){
                 G.conjuntoMaximoIndependenteGulosoRandomizadoReativo(500);
             }
-
             else if(escolha==0)
                 break;
         }
-    }
-    else{
-
-    }
-/*
-    G.adicionaAresta("A", "B", 7, true);
-    G.adicionaAresta("A", "D", 5, true);
-    G.adicionaAresta("D", "B", 97, true);
-    G.adicionaAresta("D", "E", 15, true);
-    G.adicionaAresta("D", "F", 6, true);
-    G.adicionaAresta("F", "G", 11, true);
-    G.adicionaAresta("F", "E", 8, true);
-    G.adicionaAresta("B", "C", 8, true);
-    G.adicionaAresta("C", "E", 5, true);
-    G.adicionaAresta("E", "G", 9, true);
-*/
-
-    //G.grauVertice("A", direcionado);
-    //cout << G.K_Regularidade(2) << endl;
-
-
-
-    return 0;
+        return 0;
 }

@@ -58,12 +58,15 @@ public:
     void conjuntoMaximoIndependenteGulosoRandomizadoReativo(int intMax);
 
     void numeroVertices(int n);
+    void setArquivoSaida(string arquivoSaida);
 
 private:
     bool usaId;
     bool *verticesNoGrafo;
     bool existeVertice(int id);
     Vertice *getVertice(int id);
+
+    string arquivoSaida;
 
 
 
